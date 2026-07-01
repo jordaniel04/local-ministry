@@ -6,6 +6,7 @@ import { Separator } from '@/components/ui/separator'
 import { usePerson, useDeactivatePerson } from '../hooks/usePeople'
 import { PersonBadge } from './PersonBadge'
 import { PersonForm } from './PersonForm'
+import { AvatarUpload } from './AvatarUpload'
 import {
   MARITAL_STATUS_LABELS,
   HOLY_SPIRIT_LABELS,
@@ -67,16 +68,25 @@ export function PersonDetail() {
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <div className="flex-1">
-            <div className="flex items-center gap-3 flex-wrap">
-              <h1 className="text-2xl font-bold">
-                {person.last_name}, {person.first_name}
-              </h1>
-              <PersonBadge type={person.person_type as PersonType} />
-              {!person.is_active && (
-                <span className="text-xs bg-destructive/10 text-destructive px-2 py-0.5 rounded-full">
-                  Inactivo
-                </span>
-              )}
+            <div className="flex items-center gap-4 flex-wrap">
+              <AvatarUpload
+                personId={person.id}
+                personName={`${person.first_name} ${person.last_name}`}
+                avatarUrl={person.avatar_url ?? null}
+              />
+              <div>
+                <h1 className="text-2xl font-bold">
+                  {person.last_name}, {person.first_name}
+                </h1>
+                <div className="flex items-center gap-2 mt-1 flex-wrap">
+                  <PersonBadge type={person.person_type as PersonType} />
+                  {!person.is_active && (
+                    <span className="text-xs bg-destructive/10 text-destructive px-2 py-0.5 rounded-full">
+                      Inactivo
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
           <div className="flex gap-2">

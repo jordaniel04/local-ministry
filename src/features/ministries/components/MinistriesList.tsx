@@ -1,33 +1,28 @@
 import { useState } from 'react'
-import { Pencil, PowerOff, ChevronDown, ChevronUp, Plus } from 'lucide-react'
+import { Pencil, ChevronDown, ChevronUp, Plus, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { useMinistries, useDeactivateMinistry } from '../hooks/useMinistries'
+import { useMinistries } from '../hooks/useMinistries'
 import { MinistryForm } from './MinistryForm'
 import { LeaderAssigner } from './LeaderAssigner'
 import type { MinistryWithLeaders } from '../types'
 
 export function MinistriesList() {
   const { data: ministries, isLoading, error } = useMinistries()
-  const deactivate = useDeactivateMinistry()
 
   const [formOpen, setFormOpen] = useState(false)
   const [editing, setEditing] = useState<MinistryWithLeaders | undefined>()
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [showInactive, setShowInactive] = useState(false)
+  const [search, setSearch] = useState('')
 
   if (error) return <p className="text-destructive text-sm">Error al cargar ministerios.</p>
 
-  const active = (ministries ?? []).filter((m) => m.is_active)
-  const inactive = (ministries ?? []).filter((m) => !m.is_active)
+  const q = search.toLowerCase()
+  const active = (ministries ?? []).filter((m) => m.is_active && m.name.toLowerCase().includes(q))
+  const inactive = (ministries ?? []).filter((m) => !m.is_active && m.name.toLowerCase().includes(q))
 
   function toggleExpand(id: string) {
     setExpandedId((prev) => (prev === id ? null : id))
-  }
-
-  async function handleDeactivate(m: MinistryWithLeaders) {
-    if (!confirm(`¿Desactivar "${m.name}"? No aparecerá en los listados activos.`)) return
-    await deactivate.mutateAsync(m.id)
-    if (expandedId === m.id) setExpandedId(null)
   }
 
   function openEdit(m: MinistryWithLeaders) {
@@ -43,49 +38,41 @@ export function MinistriesList() {
   function MinistryCard({ m }: { m: MinistryWithLeaders }) {
     const isExpanded = expandedId === m.id
     return (
-      <div className="border rounded-lg bg-card overflow-hidden">
+      <div className="border rounded-lg bg-card">
         {/* Cabecera del card */}
-        <div className="flex items-center gap-3 p-4">
+        <div className="flex items-center gap-2 px-3 py-3">
+          {/* Área clickeable principal */}
           <button
-            className="flex-1 text-left"
+            className="flex-1 text-left min-w-0 overflow-hidden"
             onClick={() => toggleExpand(m.id)}
           >
-            <div className="flex items-center gap-2">
-              <span className="font-medium">{m.name}</span>
-              <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
-                {m.leaders.length} {m.leaders.length === 1 ? 'líder' : 'líderes'}
-              </span>
-            </div>
+            <span className="font-medium text-sm leading-tight">{m.name}</span>
             {m.description && (
-              <p className="text-sm text-muted-foreground mt-0.5">{m.description}</p>
+              <p className="text-xs text-muted-foreground mt-0.5 truncate">{m.description}</p>
             )}
           </button>
 
-          <div className="flex items-center gap-1 shrink-0">
+          {/* Chip líderes — siempre visible, separado del nombre */}
+          <span className="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded-full shrink-0 whitespace-nowrap">
+            {m.leaders.length} {m.leaders.length === 1 ? 'líder' : 'líderes'}
+          </span>
+
+          {/* Acciones — tamaño de toque 44px mínimo */}
+          <div className="flex items-center shrink-0">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => openEdit(m)}
-              className="h-8 w-8"
+              className="h-9 w-9"
             >
-              <Pencil className="h-3.5 w-3.5" />
+              <Pencil className="h-4 w-4" />
             </Button>
-            {m.is_active && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => handleDeactivate(m)}
-                disabled={deactivate.isPending}
-                className="h-8 w-8 text-muted-foreground hover:text-destructive"
-              >
-                <PowerOff className="h-3.5 w-3.5" />
-              </Button>
-            )}
+            {/* Botón desactivar oculto por ahora */}
             <Button
               variant="ghost"
               size="icon"
               onClick={() => toggleExpand(m.id)}
-              className="h-8 w-8"
+              className="h-9 w-9"
             >
               {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
             </Button>
@@ -94,7 +81,7 @@ export function MinistriesList() {
 
         {/* Panel expandido: asignación de líderes */}
         {isExpanded && (
-          <div className="border-t px-4 py-3 bg-muted/30">
+          <div className="border-t px-3 py-3 bg-muted/30">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-3">
               Líderes
             </p>
@@ -107,12 +94,23 @@ export function MinistriesList() {
 
   return (
     <>
-      <div className="space-y-4">
-        {/* Botón nuevo */}
-        <div className="flex justify-end">
-          <Button onClick={() => setFormOpen(true)} className="gap-2">
+      <div className="space-y-3">
+        {/* Buscador + botón nuevo */}
+        <div className="flex gap-2">
+          <div className="flex items-center gap-2 flex-1 rounded-lg border border-input bg-background px-3 py-2">
+            <Search className="h-4 w-4 text-muted-foreground shrink-0" />
+            <input
+              type="text"
+              placeholder="Buscar ministerio..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+            />
+          </div>
+          <Button onClick={() => setFormOpen(true)} className="gap-2 h-10 shrink-0">
             <Plus className="h-4 w-4" />
-            Nuevo ministerio
+            <span className="hidden sm:inline">Nuevo ministerio</span>
+            <span className="sm:hidden">Nuevo</span>
           </Button>
         </div>
 

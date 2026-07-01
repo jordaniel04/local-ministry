@@ -27,10 +27,13 @@ Sprints 1–7 completados. Auth, Personas, Ministerios, Tareas, Notas, Seguimien
 - [2026-06-30] Sprint 5 — Seguimiento 1:1: sesiones con líderes, resumen, acuerdos, próxima sesión
 - [2026-06-30] Sprint 6 — Módulo de Formación (CORE): currículo, progreso por persona, promedio de notas
 - [2026-06-30] Sprint 7 — Asistencia: sesiones de clase/culto, toma masiva por sesión con upsert
+- [2026-07-01] Tema oscuro/claro: toggle en sidebar, persistencia con Zustand `persist` + `localStorage`
+- [2026-07-01] Dashboard con métricas: personas, tareas vencidas, formación, última sesión de asistencia, alertas de líderes sin sesión 1:1 en 30 días
+- [2026-07-01] Deploy en Vercel: auto-deploy en cada `git push` a `main`, `vercel.json` para SPA routing
+- [2026-07-01] Íconos PWA: generados desde logo.png (192×192, 512×512, 180×180), modo standalone en Android
 
 ## Backlog 💡
 - Roles diferenciados para líderes (acceso solo a su área)
-- Dashboard con métricas generales para el pastor
 - Notificaciones cuando una tarea lleva mucho tiempo pendiente
 - Exportar listados a PDF/Excel
 

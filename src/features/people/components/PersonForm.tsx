@@ -193,7 +193,9 @@ export function PersonForm({ open, onClose, person }: Props) {
                   onValueChange={(v) => set('marital_status', v as MaritalStatus)}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar..." />
+                    <SelectValue placeholder="Seleccionar...">
+                      {form.marital_status ? MARITAL_STATUS_LABELS[form.marital_status] : ''}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {(Object.entries(MARITAL_STATUS_LABELS) as [MaritalStatus, string][]).map(([value, label]) => (
