@@ -1,0 +1,63 @@
+- generic [ref=e5]:
+  - complementary [ref=e6]:
+    - generic [ref=e8]: ESLIDER
+    - navigation [ref=e9]:
+      - link "Dashboard" [ref=e107] [cursor=pointer]:
+        - /url: /dashboard
+        - img [ref=e11]
+        - generic [ref=e13]: Dashboard
+      - link "Personas" [ref=e108] [cursor=pointer]:
+        - /url: /people
+        - img [ref=e15]
+        - generic [ref=e20]: Personas
+      - link "Ministerios" [ref=e109] [cursor=pointer]:
+        - /url: /ministries
+        - img [ref=e22]
+        - generic [ref=e26]: Ministerios
+      - link "Formación" [ref=e110] [cursor=pointer]:
+        - /url: /formation
+        - img [ref=e28]
+        - generic [ref=e30]: Formación
+      - link "Asistencia" [ref=e111] [cursor=pointer]:
+        - /url: /attendance
+        - img [ref=e32]
+        - generic [ref=e35]: Asistencia
+      - link "Tareas" [ref=e112] [cursor=pointer]:
+        - /url: /tasks
+        - img [ref=e37]
+        - generic [ref=e40]: Tareas
+      - link "Notas" [ref=e113] [cursor=pointer]:
+        - /url: /notes
+        - img [ref=e42]
+        - generic [ref=e45]: Notas
+      - link "Seguimiento" [ref=e114] [cursor=pointer]:
+        - /url: /leader-tracking
+        - img [ref=e47]
+        - generic [ref=e49]: Seguimiento
+    - button "Cerrar sesión" [ref=e115]:
+      - img [ref=e52]
+      - generic [ref=e55]: Cerrar sesión
+  - main [ref=e56]:
+    - generic [ref=e58]:
+      - generic [ref=e59]:
+        - heading "Formación" [level=1] [ref=e116]
+        - paragraph [ref=e61]: Currículo de módulos, lecciones y progreso por persona.
+      - generic [ref=e62]:
+        - button "Progreso por persona" [ref=e117]
+        - button "Gestionar currículo" [ref=e118]
+      - generic [ref=e71]:
+        - button "Nuevo módulo" [active] [ref=e119]:
+          - img
+          - text: Nuevo módulo
+        - generic [ref=e121]:
+          - button "Consolidado 0 lecciones" [ref=e122]:
+            - img [ref=e123]
+            - generic [ref=e125]: Consolidado
+            - generic [ref=e126]: 0 lecciones
+          - generic [ref=e127]:
+            - button [ref=e128]:
+              - img
+            - button [ref=e129]:
+              - img
+            - button [ref=e130]:
+              - img

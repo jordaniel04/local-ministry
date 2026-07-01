@@ -1,0 +1,68 @@
+- generic [ref=f3e1]:
+  - generic [ref=f3e5]:
+    - complementary [ref=f3e6]:
+      - generic [ref=f3e8]: ESLIDER
+      - navigation [ref=f3e9]:
+        - link [ref=f3e66] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=f3e11]
+          - generic [ref=f3e13]: Dashboard
+        - link [ref=f3e67] [cursor=pointer]:
+          - /url: /people
+          - img [ref=f3e15]
+          - generic [ref=f3e20]: Personas
+        - link [ref=f3e68] [cursor=pointer]:
+          - /url: /ministries
+          - img [ref=f3e22]
+          - generic [ref=f3e26]: Ministerios
+        - link [ref=f3e69] [cursor=pointer]:
+          - /url: /formation
+          - img [ref=f3e28]
+          - generic [ref=f3e30]: Formación
+        - link [ref=f3e70] [cursor=pointer]:
+          - /url: /attendance
+          - img [ref=f3e32]
+          - generic [ref=f3e35]: Asistencia
+        - link [ref=f3e71] [cursor=pointer]:
+          - /url: /tasks
+          - img [ref=f3e37]
+          - generic [ref=f3e40]: Tareas
+        - link [ref=f3e72] [cursor=pointer]:
+          - /url: /notes
+          - img [ref=f3e42]
+          - generic [ref=f3e45]: Notas
+        - link [ref=f3e73] [cursor=pointer]:
+          - /url: /leader-tracking
+          - img [ref=f3e47]
+          - generic [ref=f3e49]: Seguimiento
+      - button [ref=f3e74]:
+        - img [ref=f3e52]
+        - generic [ref=f3e55]: Cerrar sesión
+    - main [ref=f3e56]:
+      - generic [ref=f3e58]:
+        - generic [ref=f3e59]:
+          - heading [level=1] [ref=f3e75]: Asistencia
+          - paragraph [ref=f3e61]: Sesiones de clase o culto. Seleccioná una para tomar asistencia.
+        - generic [ref=f3e62]:
+          - button [ref=f3e76]:
+            - img
+            - text: Nueva sesión
+          - paragraph [ref=f3e65]: No hay sesiones registradas. Creá la primera sesión para empezar a tomar asistencia.
+  - dialog "Nueva sesión" [ref=f3e80]:
+    - heading "Nueva sesión" [level=2] [ref=f3e82]
+    - generic [ref=f3e83]:
+      - generic [ref=f3e84]:
+        - generic [ref=f3e85]: Título
+        - textbox "Culto 30 Jun, Clase Módulo 2..." [active] [ref=f3e86]
+      - generic [ref=f3e87]:
+        - generic [ref=f3e88]: Fecha
+        - textbox [ref=f3e89]
+      - generic [ref=f3e90]:
+        - generic [ref=f3e91]: Notas (opcional)
+        - textbox "Observaciones de la sesión..." [ref=f3e92]
+      - generic [ref=f3e93]:
+        - button "Cancelar" [ref=f3e94]
+        - button "Crear sesión" [ref=f3e95]
+    - button "Close" [ref=f3e96]:
+      - img
+      - generic [ref=f3e97]: Close

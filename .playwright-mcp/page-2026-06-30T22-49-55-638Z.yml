@@ -1,0 +1,71 @@
+- generic [ref=e5]:
+  - complementary [ref=e6]:
+    - generic [ref=e8]: ESLIDER
+    - navigation [ref=e9]:
+      - link "Dashboard" [ref=e168] [cursor=pointer]:
+        - /url: /dashboard
+        - img [ref=e11]
+        - generic [ref=e13]: Dashboard
+      - link "Personas" [ref=e169] [cursor=pointer]:
+        - /url: /people
+        - img [ref=e15]
+        - generic [ref=e20]: Personas
+      - link "Ministerios" [ref=e170] [cursor=pointer]:
+        - /url: /ministries
+        - img [ref=e22]
+        - generic [ref=e26]: Ministerios
+      - link "Formación" [ref=e171] [cursor=pointer]:
+        - /url: /formation
+        - img [ref=e28]
+        - generic [ref=e30]: Formación
+      - link "Asistencia" [ref=e172] [cursor=pointer]:
+        - /url: /attendance
+        - img [ref=e32]
+        - generic [ref=e35]: Asistencia
+      - link "Tareas" [ref=e173] [cursor=pointer]:
+        - /url: /tasks
+        - img [ref=e37]
+        - generic [ref=e40]: Tareas
+      - link "Notas" [ref=e174] [cursor=pointer]:
+        - /url: /notes
+        - img [ref=e42]
+        - generic [ref=e45]: Notas
+      - link "Seguimiento" [ref=e175] [cursor=pointer]:
+        - /url: /leader-tracking
+        - img [ref=e47]
+        - generic [ref=e49]: Seguimiento
+    - button "Cerrar sesión" [ref=e176]:
+      - img [ref=e52]
+      - generic [ref=e55]: Cerrar sesión
+  - main [ref=e56]:
+    - generic [ref=e58]:
+      - generic [ref=e59]:
+        - heading "Formación" [level=1] [ref=e177]
+        - paragraph [ref=e61]: Currículo de módulos, lecciones y progreso por persona.
+      - generic [ref=e62]:
+        - button "Progreso por persona" [ref=e178]
+        - button "Gestionar currículo" [ref=e179]
+      - generic [ref=e189]:
+        - generic [ref=e190]:
+          - combobox [ref=e191]:
+            - generic [ref=e192]: González, María
+            - img: ▼
+          - textbox [ref=e193]: 2b905928-136f-40b9-8120-2e092ee5d2fc
+        - generic [ref=e203]:
+          - generic [ref=e205]:
+            - generic [ref=e206]: Progreso total
+            - generic [ref=e207]: 0/1 lecciones
+          - generic [ref=e209]: 0%
+        - generic [ref=e211]:
+          - button "Consolidado 0/1" [active] [ref=e212]:
+            - generic [ref=e214]:
+              - generic [ref=e215]: Consolidado
+              - generic [ref=e216]: 0/1
+            - img [ref=e221]
+          - generic [ref=e225]:
+            - button [ref=e226]:
+              - img [ref=e227]
+            - generic [ref=e230]:
+              - generic [ref=e231]: "1."
+              - generic [ref=e232]: La salvación y el arrepentimiento
+              - button "Agregar nota" [ref=e233]

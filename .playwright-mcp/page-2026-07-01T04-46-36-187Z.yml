@@ -1,0 +1,53 @@
+- generic [ref=f3e5]:
+  - complementary [ref=f3e6]:
+    - generic [ref=f3e8]: ESLIDER
+    - navigation [ref=f3e9]:
+      - link "Dashboard" [ref=f3e99] [cursor=pointer]:
+        - /url: /dashboard
+        - img [ref=f3e11]
+        - generic [ref=f3e13]: Dashboard
+      - link "Personas" [ref=f3e100] [cursor=pointer]:
+        - /url: /people
+        - img [ref=f3e15]
+        - generic [ref=f3e20]: Personas
+      - link "Ministerios" [ref=f3e101] [cursor=pointer]:
+        - /url: /ministries
+        - img [ref=f3e22]
+        - generic [ref=f3e26]: Ministerios
+      - link "Formación" [ref=f3e102] [cursor=pointer]:
+        - /url: /formation
+        - img [ref=f3e28]
+        - generic [ref=f3e30]: Formación
+      - link "Asistencia" [ref=f3e103] [cursor=pointer]:
+        - /url: /attendance
+        - img [ref=f3e32]
+        - generic [ref=f3e35]: Asistencia
+      - link "Tareas" [ref=f3e104] [cursor=pointer]:
+        - /url: /tasks
+        - img [ref=f3e37]
+        - generic [ref=f3e40]: Tareas
+      - link "Notas" [ref=f3e105] [cursor=pointer]:
+        - /url: /notes
+        - img [ref=f3e42]
+        - generic [ref=f3e45]: Notas
+      - link "Seguimiento" [ref=f3e106] [cursor=pointer]:
+        - /url: /leader-tracking
+        - img [ref=f3e47]
+        - generic [ref=f3e49]: Seguimiento
+    - button "Cerrar sesión" [ref=f3e107]:
+      - img [ref=f3e52]
+      - generic [ref=f3e55]: Cerrar sesión
+  - main [ref=f3e56]:
+    - generic [ref=f3e58]:
+      - generic [ref=f3e59]:
+        - heading "Asistencia" [level=1] [ref=f3e108]
+        - paragraph [ref=f3e61]: Sesiones de clase o culto. Seleccioná una para tomar asistencia.
+      - generic [ref=f3e62]:
+        - generic [ref=f3e63]:
+          - button "← Volver" [ref=f3e121]
+          - generic [ref=f3e122]:
+            - heading "Culto 29 Jun" [level=2] [ref=f3e123]
+            - paragraph [ref=f3e124]: lunes, 29 de junio de 2026
+        - generic [ref=f3e126]:
+          - generic [ref=f3e127]: "0"
+          - text: de 0 personas presentes

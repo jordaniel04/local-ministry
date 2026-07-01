@@ -1,0 +1,68 @@
+- generic [ref=e5]:
+  - complementary [ref=e6]:
+    - generic [ref=e8]: ESLIDER
+    - navigation [ref=e9]:
+      - link "Dashboard" [ref=e104] [cursor=pointer]:
+        - /url: /dashboard
+        - img [ref=e11]
+        - generic [ref=e13]: Dashboard
+      - link "Personas" [ref=e105] [cursor=pointer]:
+        - /url: /people
+        - img [ref=e15]
+        - generic [ref=e20]: Personas
+      - link "Ministerios" [ref=e106] [cursor=pointer]:
+        - /url: /ministries
+        - img [ref=e22]
+        - generic [ref=e26]: Ministerios
+      - link "Formación" [ref=e107] [cursor=pointer]:
+        - /url: /formation
+        - img [ref=e28]
+        - generic [ref=e30]: Formación
+      - link "Asistencia" [ref=e108] [cursor=pointer]:
+        - /url: /attendance
+        - img [ref=e32]
+        - generic [ref=e35]: Asistencia
+      - link "Tareas" [ref=e109] [cursor=pointer]:
+        - /url: /tasks
+        - img [ref=e37]
+        - generic [ref=e40]: Tareas
+      - link "Notas" [ref=e110] [cursor=pointer]:
+        - /url: /notes
+        - img [ref=e42]
+        - generic [ref=e45]: Notas
+    - button "Cerrar sesión" [ref=e111]:
+      - img [ref=e48]
+      - generic [ref=e51]: Cerrar sesión
+  - main [ref=e52]:
+    - generic [ref=e54]:
+      - generic [ref=e55]:
+        - heading "Notas de Exposiciones" [level=1] [ref=e112]
+        - paragraph [ref=e57]: Registro de notas, highlights y áreas de mejora por exposición.
+      - generic [ref=e58]:
+        - button "Nueva nota" [ref=e113]:
+          - img
+          - text: Nueva nota
+        - generic [ref=e114]:
+          - generic [ref=e115]:
+            - button "Predica sobre la fe Jorge Guevara 28 de junio de 2026" [ref=e116]:
+              - generic [ref=e117]:
+                - generic [ref=e118]: Predica sobre la fe
+                - generic [ref=e119]: Jorge Guevara
+                - generic [ref=e120]: 28 de junio de 2026
+            - generic [ref=e121]:
+              - button [ref=e122]:
+                - img
+              - button [ref=e123]:
+                - img
+              - button [active] [ref=e124]:
+                - img
+          - generic [ref=e125]:
+            - generic [ref=e126]:
+              - paragraph [ref=e127]: Resumen
+              - paragraph [ref=e128]: Exposición basada en Hebreos 11. Se desarrollaron los puntos clave de la fe como fundamento de la vida cristiana.
+            - generic [ref=e129]:
+              - paragraph [ref=e130]: ✓ Puntos destacados
+              - paragraph [ref=e131]: Buena estructura, conexión con el auditorio, citas bíblicas pertinentes.
+            - generic [ref=e132]:
+              - paragraph [ref=e133]: ↑ Por mejorar
+              - paragraph [ref=e134]: Mejorar el cierre, hablar más despacio en los puntos clave.

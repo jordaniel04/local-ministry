@@ -1,0 +1,87 @@
+- generic [ref=e1]:
+  - generic [ref=e5]:
+    - complementary [ref=e6]:
+      - generic [ref=e8]: ESLIDER
+      - navigation [ref=e9]:
+        - link [ref=e134] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e11]
+          - generic [ref=e13]: Dashboard
+        - link [ref=e135] [cursor=pointer]:
+          - /url: /people
+          - img [ref=e15]
+          - generic [ref=e20]: Personas
+        - link [ref=e136] [cursor=pointer]:
+          - /url: /ministries
+          - img [ref=e22]
+          - generic [ref=e26]: Ministerios
+        - link [ref=e137] [cursor=pointer]:
+          - /url: /formation
+          - img [ref=e28]
+          - generic [ref=e30]: Formación
+        - link [ref=e138] [cursor=pointer]:
+          - /url: /attendance
+          - img [ref=e32]
+          - generic [ref=e35]: Asistencia
+        - link [ref=e139] [cursor=pointer]:
+          - /url: /tasks
+          - img [ref=e37]
+          - generic [ref=e40]: Tareas
+        - link [ref=e140] [cursor=pointer]:
+          - /url: /notes
+          - img [ref=e42]
+          - generic [ref=e45]: Notas
+        - link [ref=e141] [cursor=pointer]:
+          - /url: /leader-tracking
+          - img [ref=e47]
+          - generic [ref=e49]: Seguimiento
+      - button [ref=e142]:
+        - img [ref=e52]
+        - generic [ref=e55]: Cerrar sesión
+    - main [ref=e56]:
+      - generic [ref=e58]:
+        - generic [ref=e59]:
+          - heading [level=1] [ref=e143]: Formación
+          - paragraph [ref=e61]: Currículo de módulos, lecciones y progreso por persona.
+        - generic [ref=e62]:
+          - button [ref=e144]: Progreso por persona
+          - button [ref=e145]: Gestionar currículo
+        - generic [ref=e71]:
+          - button [ref=e146]:
+            - img
+            - text: Nuevo módulo
+          - generic [ref=e120]:
+            - generic [ref=e121]:
+              - button [ref=e147]:
+                - img [ref=e123]
+                - generic [ref=e125]: Consolidado
+                - generic [ref=e126]: 0 lecciones
+              - generic [ref=e127]:
+                - button [ref=e128]:
+                  - img
+                - button [ref=e129]:
+                  - img
+                - button [ref=e130]:
+                  - img
+            - generic [ref=e131]:
+              - paragraph [ref=e132]: Sin lecciones aún.
+              - button [ref=e148]:
+                - img
+                - text: Añadir lección
+  - dialog "Nueva lección — Consolidado" [ref=e152]:
+    - heading "Nueva lección — Consolidado" [level=2] [ref=e154]
+    - generic [ref=e155]:
+      - generic [ref=e156]:
+        - generic [ref=e157]: Título *
+        - textbox "Título *" [active] [ref=e158]:
+          - /placeholder: "Ej: La salvación, El bautismo..."
+      - generic [ref=e159]:
+        - generic [ref=e160]: Descripción
+        - textbox "Descripción" [ref=e161]:
+          - /placeholder: Descripción o temas de la lección...
+      - generic [ref=e162]:
+        - button "Cancelar" [ref=e163]
+        - button "Crear lección" [disabled]
+    - button "Close" [ref=e164]:
+      - img
+      - generic [ref=e165]: Close

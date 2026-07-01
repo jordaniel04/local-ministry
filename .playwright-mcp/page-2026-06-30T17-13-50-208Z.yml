@@ -1,0 +1,90 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e5]:
+    - complementary [ref=e6]:
+      - generic [ref=e8]: ESLIDER
+      - navigation [ref=e9]:
+        - link "Dashboard" [ref=e104] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e11]
+          - generic [ref=e13]: Dashboard
+        - link "Personas" [ref=e105] [cursor=pointer]:
+          - /url: /people
+          - img [ref=e15]
+          - generic [ref=e20]: Personas
+        - link "Ministerios" [ref=e106] [cursor=pointer]:
+          - /url: /ministries
+          - img [ref=e22]
+          - generic [ref=e26]: Ministerios
+        - link "Formación" [ref=e107] [cursor=pointer]:
+          - /url: /formation
+          - img [ref=e28]
+          - generic [ref=e30]: Formación
+        - link "Asistencia" [ref=e108] [cursor=pointer]:
+          - /url: /attendance
+          - img [ref=e32]
+          - generic [ref=e35]: Asistencia
+        - link "Tareas" [ref=e109] [cursor=pointer]:
+          - /url: /tasks
+          - img [ref=e37]
+          - generic [ref=e40]: Tareas
+        - link "Notas" [ref=e110] [cursor=pointer]:
+          - /url: /notes
+          - img [ref=e42]
+          - generic [ref=e45]: Notas
+      - button "Cerrar sesión" [ref=e111]:
+        - img [ref=e48]
+        - generic [ref=e51]: Cerrar sesión
+    - main [ref=e52]:
+      - generic [ref=e54]:
+        - generic [ref=e55]:
+          - heading "Notas de Exposiciones" [level=1] [ref=e112]
+          - paragraph [ref=e57]: Registro de notas, highlights y áreas de mejora por exposición.
+        - generic [ref=e58]:
+          - button "Nueva nota" [ref=e113]:
+            - img
+            - text: Nueva nota
+          - generic [ref=e115]:
+            - button "Predica sobre la fe Jorge Guevara 28 de junio de 2026" [ref=e116]:
+              - generic [ref=e117]:
+                - generic [ref=e118]: Predica sobre la fe
+                - generic [ref=e119]: Jorge Guevara
+                - generic [ref=e120]: 28 de junio de 2026
+            - generic [ref=e121]:
+              - button [ref=e122]:
+                - img
+              - button [ref=e123]:
+                - img
+              - button [ref=e124]:
+                - img
+  - dialog "Nueva nota de exposición" [ref=e75]:
+    - heading "Nueva nota de exposición" [level=2] [ref=e77]
+    - generic [ref=e78]:
+      - generic [ref=e79]:
+        - generic [ref=e80]: Título *
+        - textbox "Título *" [ref=e81]
+      - generic [ref=e82]:
+        - generic [ref=e83]:
+          - generic [ref=e84]: Expositor
+          - textbox "Expositor" [ref=e85]:
+            - /placeholder: Nombre del expositor
+        - generic [ref=e86]:
+          - generic [ref=e87]: Fecha *
+          - textbox "Fecha *" [ref=e88]
+      - generic [ref=e89]:
+        - generic [ref=e90]: Contenido / Resumen
+        - textbox "Contenido / Resumen" [ref=e91]:
+          - /placeholder: Resumen de la exposición...
+      - generic [ref=e92]:
+        - generic [ref=e93]: Puntos destacados
+        - textbox "Puntos destacados" [ref=e94]:
+          - /placeholder: Cosas positivas, puntos fuertes...
+      - generic [ref=e95]:
+        - generic [ref=e96]: Por mejorar
+        - textbox "Por mejorar" [ref=e97]:
+          - /placeholder: Áreas de mejora, observaciones...
+      - generic [ref=e98]:
+        - button "Cancelar" [ref=e99]
+        - button "Crear nota" [disabled]
+    - button "Close" [ref=e100]:
+      - img
+      - generic [ref=e101]: Close

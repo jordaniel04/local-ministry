@@ -1,0 +1,88 @@
+- generic [ref=e5]:
+  - complementary [ref=e6]:
+    - generic [ref=e8]: ESLIDER
+    - navigation [ref=e9]:
+      - link "Dashboard" [ref=e160] [cursor=pointer]:
+        - /url: /dashboard
+        - img [ref=e11]
+        - generic [ref=e13]: Dashboard
+      - link "Personas" [ref=e161] [cursor=pointer]:
+        - /url: /people
+        - img [ref=e15]
+        - generic [ref=e20]: Personas
+      - link "Ministerios" [ref=e162] [cursor=pointer]:
+        - /url: /ministries
+        - img [ref=e22]
+        - generic [ref=e26]: Ministerios
+      - link "Formación" [ref=e163] [cursor=pointer]:
+        - /url: /formation
+        - img [ref=e28]
+        - generic [ref=e30]: Formación
+      - link "Asistencia" [ref=e164] [cursor=pointer]:
+        - /url: /attendance
+        - img [ref=e32]
+        - generic [ref=e35]: Asistencia
+      - link "Tareas" [ref=e165] [cursor=pointer]:
+        - /url: /tasks
+        - img [ref=e37]
+        - generic [ref=e40]: Tareas
+      - link "Notas" [ref=e166] [cursor=pointer]:
+        - /url: /notes
+        - img [ref=e42]
+        - generic [ref=e45]: Notas
+    - button "Cerrar sesión" [ref=e167]:
+      - img [ref=e48]
+      - generic [ref=e51]: Cerrar sesión
+  - main [ref=e52]:
+    - generic [ref=e183]:
+      - generic [ref=e184]:
+        - button [ref=e185]:
+          - img
+        - generic [ref=e187]:
+          - heading "Guevara Leiva, Jorge Daniel" [level=1] [ref=e188]
+          - generic [ref=e189]: Visitante
+        - generic [ref=e190]:
+          - button "Editar" [ref=e191]:
+            - img
+            - text: Editar
+          - button "Desactivar" [ref=e192]:
+            - img
+            - text: Desactivar
+      - generic [ref=e193]:
+        - paragraph [ref=e194]: Datos personales
+        - generic [ref=e195]:
+          - generic [ref=e196]:
+            - paragraph [ref=e197]: Fecha de nacimiento
+            - paragraph [ref=e198]: —
+          - generic [ref=e199]:
+            - paragraph [ref=e200]: Estado civil
+            - paragraph [ref=e201]: —
+      - separator
+      - generic [ref=e202]:
+        - paragraph [ref=e203]: Contacto
+        - generic [ref=e204]:
+          - generic [ref=e205]:
+            - paragraph [ref=e206]: Teléfono
+            - paragraph [ref=e207]: "987654321"
+          - generic [ref=e208]:
+            - paragraph [ref=e209]: Email
+            - paragraph [ref=e210]: —
+          - generic [ref=e211]:
+            - paragraph [ref=e212]: Dirección
+            - paragraph [ref=e213]: —
+      - separator
+      - generic [ref=e214]:
+        - paragraph [ref=e215]: Historia espiritual
+        - generic [ref=e216]:
+          - generic [ref=e217]:
+            - paragraph [ref=e218]: Fecha de conversión
+            - paragraph [ref=e219]: —
+          - generic [ref=e220]:
+            - paragraph [ref=e221]: Bautismo en agua
+            - paragraph [ref=e222]: —
+          - generic [ref=e223]:
+            - paragraph [ref=e224]: Experiencia con el Espíritu Santo
+            - paragraph [ref=e225]: Sin experiencia aún
+          - generic [ref=e226]:
+            - paragraph [ref=e227]: Bautismo E.S.
+            - paragraph [ref=e228]: —

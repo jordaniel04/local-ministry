@@ -1,0 +1,63 @@
+- generic [ref=e1]:
+  - generic [ref=e5]:
+    - complementary [ref=e6]:
+      - generic [ref=e8]: ESLIDER
+      - navigation [ref=e9]:
+        - link [ref=e62] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e11]
+          - generic [ref=e13]: Dashboard
+        - link [ref=e63] [cursor=pointer]:
+          - /url: /people
+          - img [ref=e15]
+          - generic [ref=e20]: Personas
+        - link [ref=e64] [cursor=pointer]:
+          - /url: /ministries
+          - img [ref=e22]
+          - generic [ref=e26]: Ministerios
+        - link [ref=e65] [cursor=pointer]:
+          - /url: /formation
+          - img [ref=e28]
+          - generic [ref=e30]: Formación
+        - link [ref=e66] [cursor=pointer]:
+          - /url: /attendance
+          - img [ref=e32]
+          - generic [ref=e35]: Asistencia
+        - link [ref=e67] [cursor=pointer]:
+          - /url: /tasks
+          - img [ref=e37]
+          - generic [ref=e40]: Tareas
+        - link [ref=e68] [cursor=pointer]:
+          - /url: /notes
+          - img [ref=e42]
+          - generic [ref=e45]: Notas
+      - button [ref=e69]:
+        - img [ref=e48]
+        - generic [ref=e51]: Cerrar sesión
+    - main [ref=e52]:
+      - generic [ref=e54]:
+        - generic [ref=e55]:
+          - heading [level=1] [ref=e70]: Ministerios
+          - paragraph [ref=e57]: Catálogo de ministerios y sus líderes asignados.
+        - generic [ref=e58]:
+          - button [ref=e71]:
+            - img
+            - text: Nuevo ministerio
+          - generic [ref=e61]: No hay ministerios registrados aún.
+  - dialog "Nuevo ministerio" [ref=e75]:
+    - heading "Nuevo ministerio" [level=2] [ref=e77]
+    - generic [ref=e78]:
+      - generic [ref=e79]:
+        - generic [ref=e80]: Nombre *
+        - textbox "Nombre *" [active] [ref=e81]:
+          - /placeholder: "Ej: Ministerio de Alabanza"
+      - generic [ref=e82]:
+        - generic [ref=e83]: Descripción
+        - textbox "Descripción" [ref=e84]:
+          - /placeholder: Descripción opcional del ministerio...
+      - generic [ref=e85]:
+        - button "Cancelar" [ref=e86]
+        - button "Crear ministerio" [ref=e87]
+    - button "Close" [ref=e88]:
+      - img
+      - generic [ref=e89]: Close

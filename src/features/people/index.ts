@@ -1,0 +1,5 @@
+export { PeopleList } from './components/PeopleList'
+export { PersonDetail } from './components/PersonDetail'
+export { PersonForm } from './components/PersonForm'
+export { PersonBadge } from './components/PersonBadge'
+export type { Person, PersonType, MaritalStatus, HolySpiritExperience } from './types'

@@ -1,0 +1,47 @@
+- generic [ref=f5e5]:
+  - complementary [ref=f5e6]:
+    - generic [ref=f5e8]: ESLIDER
+    - navigation [ref=f5e9]:
+      - link "Dashboard" [ref=f5e10] [cursor=pointer]:
+        - /url: /dashboard
+        - img [ref=f5e11]
+        - generic [ref=f5e13]: Dashboard
+      - link "Personas" [ref=f5e14] [cursor=pointer]:
+        - /url: /people
+        - img [ref=f5e15]
+        - generic [ref=f5e20]: Personas
+      - link "Ministerios" [ref=f5e21] [cursor=pointer]:
+        - /url: /ministries
+        - img [ref=f5e22]
+        - generic [ref=f5e26]: Ministerios
+      - link "Formación" [ref=f5e27] [cursor=pointer]:
+        - /url: /formation
+        - img [ref=f5e28]
+        - generic [ref=f5e30]: Formación
+      - link "Asistencia" [ref=f5e31] [cursor=pointer]:
+        - /url: /attendance
+        - img [ref=f5e32]
+        - generic [ref=f5e35]: Asistencia
+      - link "Tareas" [ref=f5e36] [cursor=pointer]:
+        - /url: /tasks
+        - img [ref=f5e37]
+        - generic [ref=f5e40]: Tareas
+      - link "Notas" [ref=f5e41] [cursor=pointer]:
+        - /url: /notes
+        - img [ref=f5e42]
+        - generic [ref=f5e45]: Notas
+      - link "Seguimiento" [ref=f5e46] [cursor=pointer]:
+        - /url: /leader-tracking
+        - img [ref=f5e47]
+        - generic [ref=f5e49]: Seguimiento
+    - generic [ref=f5e50]:
+      - button "Tema claro" [active] [ref=f5e65]:
+        - img [ref=f5e66]
+        - generic [ref=f5e54]: Tema claro
+      - button "Cerrar sesión" [ref=f5e55]:
+        - img [ref=f5e56]
+        - generic [ref=f5e59]: Cerrar sesión
+  - main [ref=f5e60]:
+    - generic [ref=f5e62]:
+      - heading "Dashboard" [level=1] [ref=f5e63]
+      - paragraph [ref=f5e64]: Resumen y alertas del ministerio.

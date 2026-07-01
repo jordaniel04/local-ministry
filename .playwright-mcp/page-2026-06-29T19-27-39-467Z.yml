@@ -1,0 +1,61 @@
+- generic [ref=e5]:
+  - complementary [ref=e6]:
+    - generic [ref=e8]: ESLIDER
+    - navigation [ref=e9]:
+      - link "Dashboard" [ref=e10] [cursor=pointer]:
+        - /url: /dashboard
+        - img [ref=e11]
+        - generic [ref=e13]: Dashboard
+      - link "Personas" [ref=e14] [cursor=pointer]:
+        - /url: /people
+        - img [ref=e15]
+        - generic [ref=e20]: Personas
+      - link "Ministerios" [ref=e21] [cursor=pointer]:
+        - /url: /ministries
+        - img [ref=e22]
+        - generic [ref=e26]: Ministerios
+      - link "Formación" [ref=e27] [cursor=pointer]:
+        - /url: /formation
+        - img [ref=e28]
+        - generic [ref=e30]: Formación
+      - link "Asistencia" [ref=e31] [cursor=pointer]:
+        - /url: /attendance
+        - img [ref=e32]
+        - generic [ref=e35]: Asistencia
+      - link "Tareas" [ref=e36] [cursor=pointer]:
+        - /url: /tasks
+        - img [ref=e37]
+        - generic [ref=e40]: Tareas
+      - link "Notas" [ref=e41] [cursor=pointer]:
+        - /url: /notes
+        - img [ref=e42]
+        - generic [ref=e45]: Notas
+    - button "Cerrar sesión" [ref=e47]:
+      - img [ref=e48]
+      - generic [ref=e51]: Cerrar sesión
+  - main [ref=e52]:
+    - generic [ref=e54]:
+      - generic [ref=e55]:
+        - heading "Personas" [level=1] [ref=e56]
+        - paragraph [ref=e57]: Miembros, creyentes y visitantes del ministerio.
+      - generic [ref=e58]:
+        - generic [ref=e59]:
+          - generic [ref=e60]:
+            - img [ref=e61]
+            - textbox "Buscar por nombre..." [ref=e64]
+          - button "Nueva persona" [ref=e65]:
+            - img
+            - text: Nueva persona
+        - generic [ref=e66]:
+          - button "Todos" [ref=e67]
+          - button "Miembro(0)" [ref=e68]:
+            - text: Miembro
+            - generic [ref=e69]: (0)
+          - button "Creyente(0)" [ref=e70]:
+            - text: Creyente
+            - generic [ref=e71]: (0)
+          - button "Visitante(0)" [ref=e72]:
+            - text: Visitante
+            - generic [ref=e73]: (0)
+        - generic [ref=e74]: No hay personas registradas aún.
+        - paragraph [ref=e75]: 0 de 0 personas
