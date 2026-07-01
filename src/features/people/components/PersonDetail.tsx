@@ -63,49 +63,52 @@ export function PersonDetail() {
     <>
       <div className="space-y-6">
         {/* Cabecera */}
-        <div className="flex items-start gap-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate('/people')}>
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <div className="flex-1">
-            <div className="flex items-center gap-4 flex-wrap">
-              <AvatarUpload
-                personId={person.id}
-                personName={`${person.first_name} ${person.last_name}`}
-                avatarUrl={person.avatar_url ?? null}
-              />
-              <div>
-                <h1 className="text-2xl font-bold">
-                  {person.last_name}, {person.first_name}
-                </h1>
-                <div className="flex items-center gap-2 mt-1 flex-wrap">
-                  <PersonBadge type={person.person_type as PersonType} />
-                  {!person.is_active && (
-                    <span className="text-xs bg-destructive/10 text-destructive px-2 py-0.5 rounded-full">
-                      Inactivo
-                    </span>
-                  )}
-                </div>
-              </div>
+        <div className="space-y-3">
+          {/* Fila top: botón volver + botones acción */}
+          <div className="flex items-center justify-between">
+            <Button variant="ghost" size="icon" onClick={() => navigate('/people')}>
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={() => setEditOpen(true)} className="gap-2">
+                <Pencil className="h-3.5 w-3.5" />
+                Editar
+              </Button>
+              {person.is_active && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleDeactivate}
+                  disabled={deactivate.isPending}
+                  className="gap-2 text-destructive hover:text-destructive"
+                >
+                  <UserX className="h-3.5 w-3.5" />
+                  Desactivar
+                </Button>
+              )}
             </div>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={() => setEditOpen(true)} className="gap-2">
-              <Pencil className="h-3.5 w-3.5" />
-              Editar
-            </Button>
-            {person.is_active && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleDeactivate}
-                disabled={deactivate.isPending}
-                className="gap-2 text-destructive hover:text-destructive"
-              >
-                <UserX className="h-3.5 w-3.5" />
-                Desactivar
-              </Button>
-            )}
+
+          {/* Avatar + nombre */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            <AvatarUpload
+              personId={person.id}
+              personName={`${person.first_name} ${person.last_name}`}
+              avatarUrl={person.avatar_url ?? null}
+            />
+            <div className="min-w-0">
+              <h1 className="text-xl font-bold leading-tight">
+                {person.last_name}, {person.first_name}
+              </h1>
+              <div className="flex items-center gap-2 mt-1 flex-wrap">
+                <PersonBadge type={person.person_type as PersonType} />
+                {!person.is_active && (
+                  <span className="text-xs bg-destructive/10 text-destructive px-2 py-0.5 rounded-full">
+                    Inactivo
+                  </span>
+                )}
+              </div>
+            </div>
           </div>
         </div>
 
