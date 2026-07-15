@@ -86,12 +86,7 @@ features/people/
 
 ## Hosting
 
-Por definir. Candidatos:
-- **Vercel** — gratis para SPAs, deploy automático desde GitHub
-- **Netlify** — similar a Vercel
-- **Cloudflare Pages** — muy rápido, gratis
-
-> La app es una SPA (Single Page Application) — cualquier host de archivos estáticos sirve.
+**Vercel** — deploy automático en cada `git push` a `main`. Configurado con `vercel.json` para SPA routing (todas las rutas redirigen a `index.html`).
 
 ## Decisiones de arquitectura
 
