@@ -1,6 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 
+const db = supabase as any
+
 export function usePeopleStats() {
   return useQuery({
     queryKey: ['dashboard-people'],
@@ -49,27 +51,21 @@ export function useFormationStats() {
   return useQuery({
     queryKey: ['dashboard-formation'],
     queryFn: async () => {
-      const { data: people, error: pe } = await supabase
-        .from('people')
+      const { data: enrollments, error: enrollmentError } = await db
+        .from('formation_enrollments')
+        .select('person_id')
+      if (enrollmentError) throw enrollmentError
+
+      const { data: attempts, error: attemptError } = await db
+        .from('formation_module_enrollments')
         .select('id')
-        .eq('is_active', true)
-      if (pe) throw pe
+        .eq('status', 'in_progress')
+      if (attemptError) throw attemptError
 
-      const { data: progress, error: pre } = await supabase
-        .from('person_lesson_progress')
-        .select('person_id, score')
-        .eq('completed', true)
-      if (pre) throw pre
-
-      const peopleWithProgress = new Set(progress?.map((p) => p.person_id))
-      const noProgress = (people ?? []).filter((p) => !peopleWithProgress.has(p.id)).length
-
-      const scores = (progress ?? []).map((p) => p.score).filter((s): s is number => s != null)
-      const avgScore = scores.length > 0
-        ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length * 10) / 10
-        : null
-
-      return { noProgress, avgScore, totalWithProgress: peopleWithProgress.size }
+      return {
+        enrolledPeople: new Set((enrollments ?? []).map((enrollment: { person_id: string }) => enrollment.person_id)).size,
+        activeModuleEnrollments: (attempts ?? []).length,
+      }
     },
   })
 }
@@ -78,9 +74,11 @@ export function useLastAttendance() {
   return useQuery({
     queryKey: ['dashboard-attendance'],
     queryFn: async () => {
+      const today = new Date().toISOString().split('T')[0]
       const { data: sessions, error: se } = await supabase
         .from('class_sessions')
         .select('id, title, session_date')
+        .lte('session_date', today)
         .order('session_date', { ascending: false })
         .limit(1)
       if (se) throw se
@@ -94,9 +92,10 @@ export function useLastAttendance() {
       if (ae) throw ae
 
       const present = (attendance ?? []).filter((a) => a.status === 'present').length
+      const late = (attendance ?? []).filter((a) => a.status === 'late').length
       const total = (attendance ?? []).length
 
-      return { title: session.title, date: session.session_date, present, total }
+      return { title: session.title, date: session.session_date, present, late, attendees: present + late, total }
     },
   })
 }

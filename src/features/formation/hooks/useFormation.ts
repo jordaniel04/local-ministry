@@ -10,7 +10,9 @@ import type {
   LessonWithProgress,
   LessonProgressInsert,
   LessonProgressUpdate,
+  PersonProgressSummary,
 } from '../types'
+import { matchesOfficialModule, OFFICIAL_ROUTE_MODULES } from '../officialRoute'
 
 // ─── Módulos ────────────────────────────────────────────────────────────────
 
@@ -172,6 +174,116 @@ export function usePersonProgress(personId: string) {
           completedCount: completed,
           totalCount: lessons.length,
           averageScore: avg,
+        }
+      })
+    },
+  })
+}
+
+export function useAddMissingOfficialModules() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (existingModules: ModuleWithLessons[]) => {
+      const missingModules = OFFICIAL_ROUTE_MODULES.filter((official) =>
+        !existingModules.some((module) => matchesOfficialModule(module.name, official))
+      )
+
+      for (const official of OFFICIAL_ROUTE_MODULES) {
+        const existingModule = existingModules.find((module) =>
+          matchesOfficialModule(module.name, official)
+        )
+        if (!existingModule || existingModule.order_index === official.orderIndex) continue
+
+        const { error: orderError } = await supabase
+          .from('formation_modules')
+          .update({ order_index: official.orderIndex })
+          .eq('id', existingModule.id)
+        if (orderError) throw orderError
+      }
+
+      if (missingModules.length === 0) return []
+
+      const { data, error } = await supabase
+        .from('formation_modules')
+        .insert(missingModules.map((module) => ({
+          name: module.name,
+          description: module.description,
+          order_index: module.orderIndex,
+          is_active: true,
+        })))
+        .select()
+      if (error) throw error
+      return data
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['formation-modules'] }),
+  })
+}
+
+export function useAllPeopleProgress(personIds: string[]) {
+  const sortedPersonIds = [...personIds].sort()
+
+  return useQuery({
+    queryKey: ['formation-progress-summary', sortedPersonIds],
+    enabled: sortedPersonIds.length > 0,
+    queryFn: async (): Promise<PersonProgressSummary[]> => {
+      const { data: modules, error: modulesError } = await supabase
+        .from('formation_modules')
+        .select('*, formation_lessons(*)')
+        .eq('is_active', true)
+        .order('order_index')
+      if (modulesError) throw modulesError
+
+      const { data: progress, error: progressError } = await supabase
+        .from('person_lesson_progress')
+        .select('person_id, lesson_id, completed')
+        .in('person_id', sortedPersonIds)
+      if (progressError) throw progressError
+
+      const orderedModules = (modules ?? []).map((module) => ({
+        ...module,
+        formation_lessons: (module.formation_lessons ?? []).sort(
+          (a, b) => a.order_index - b.order_index
+        ),
+      }))
+      const totalCount = orderedModules.reduce(
+        (total, module) => total + module.formation_lessons.length,
+        0
+      )
+      const activeLessonIds = new Set(
+        orderedModules.flatMap((module) =>
+          module.formation_lessons.map((lesson) => lesson.id)
+        )
+      )
+      const completedByPerson = new Map<string, Set<string>>()
+
+      for (const item of progress ?? []) {
+        if (!item.completed || !activeLessonIds.has(item.lesson_id)) continue
+        const completedLessons = completedByPerson.get(item.person_id) ?? new Set<string>()
+        completedLessons.add(item.lesson_id)
+        completedByPerson.set(item.person_id, completedLessons)
+      }
+
+      return sortedPersonIds.map((personId) => {
+        const completedLessons = completedByPerson.get(personId) ?? new Set<string>()
+        const completedCount = completedLessons.size
+        const currentModule = orderedModules.find((module) =>
+          module.formation_lessons.some((lesson) => !completedLessons.has(lesson.id))
+        )
+        const completedRoute = totalCount > 0 && completedCount >= totalCount
+
+        return {
+          personId,
+          completedCount,
+          totalCount,
+          progressPercentage: totalCount > 0
+            ? Math.round((completedCount / totalCount) * 100)
+            : 0,
+          currentModuleId: currentModule?.id ?? null,
+          currentModuleName: completedRoute
+            ? 'Ruta completada'
+            : currentModule?.name ?? 'Sin módulos activos',
+          completedRoute,
         }
       })
     },

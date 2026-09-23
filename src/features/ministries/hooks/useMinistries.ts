@@ -91,6 +91,25 @@ export function useDeactivateMinistry() {
   })
 }
 
+export function useDeleteMinistry() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error: leadersError } = await supabase
+        .from('leader_ministries')
+        .delete()
+        .eq('ministry_id', id)
+      if (leadersError) throw leadersError
+
+      const { error } = await supabase.from('ministries').delete().eq('id', id)
+      if (error) throw error
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['ministries'] })
+    },
+  })
+}
+
 export function useAssignLeader() {
   const queryClient = useQueryClient()
   return useMutation({

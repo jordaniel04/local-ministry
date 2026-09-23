@@ -26,3 +26,13 @@ export type ModuleWithProgress = FormationModule & {
   totalCount: number
   averageScore: number | null
 }
+
+export type PersonProgressSummary = {
+  personId: string
+  completedCount: number
+  totalCount: number
+  progressPercentage: number
+  currentModuleId: string | null
+  currentModuleName: string
+  completedRoute: boolean
+}

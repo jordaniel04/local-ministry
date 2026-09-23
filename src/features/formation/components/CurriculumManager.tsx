@@ -1,15 +1,17 @@
 import { useState } from 'react'
-import { Plus, Pencil, Trash2, ChevronDown, ChevronUp, BookOpen } from 'lucide-react'
+import { Plus, Pencil, Trash2, ChevronDown, ChevronUp, BookOpen, BookPlus, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { useModules, useDeleteModule, useDeleteLesson } from '../hooks/useFormation'
+import { useModules, useDeleteModule, useDeleteLesson, useAddMissingOfficialModules } from '../hooks/useFormation'
 import { ModuleForm } from './ModuleForm'
 import { LessonForm } from './LessonForm'
 import type { FormationModule, FormationLesson, ModuleWithLessons } from '../types'
+import { matchesOfficialModule, OFFICIAL_ROUTE_MODULES } from '../officialRoute'
 
 export function CurriculumManager() {
   const { data: modules, isLoading, error } = useModules()
   const deleteModule = useDeleteModule()
   const deleteLesson = useDeleteLesson()
+  const addOfficialModules = useAddMissingOfficialModules()
 
   const [moduleFormOpen, setModuleFormOpen] = useState(false)
   const [editingModule, setEditingModule] = useState<FormationModule | undefined>()
@@ -17,6 +19,7 @@ export function CurriculumManager() {
   const [lessonFormModule, setLessonFormModule] = useState<ModuleWithLessons | undefined>()
   const [editingLesson, setEditingLesson] = useState<FormationLesson | undefined>()
   const [expandedId, setExpandedId] = useState<string | null>(null)
+  const [syncMessage, setSyncMessage] = useState('')
 
   if (error) return <p className="text-destructive text-sm">Error al cargar currículo.</p>
 
@@ -43,10 +46,43 @@ export function CurriculumManager() {
     await deleteLesson.mutateAsync(l.id)
   }
 
+  async function handleAddOfficialModules() {
+    setSyncMessage('')
+    try {
+      const created = await addOfficialModules.mutateAsync(modules ?? [])
+      setSyncMessage(created.length > 0
+        ? `Se agregaron ${created.length} módulos oficiales.`
+        : 'La ruta oficial ya tiene todos sus módulos.')
+    } catch {
+      setSyncMessage('No se pudieron agregar los módulos. Revisa tu conexión y permisos.')
+    }
+  }
+
+  const missingOfficialModules = OFFICIAL_ROUTE_MODULES.filter((official) =>
+    !(modules ?? []).some((module) => matchesOfficialModule(module.name, official))
+  )
+
   return (
     <>
       <div className="space-y-3">
-        <div className="flex justify-end">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <Button
+              variant="outline"
+              onClick={handleAddOfficialModules}
+              disabled={addOfficialModules.isPending || missingOfficialModules.length === 0}
+              className="gap-2"
+              size="sm"
+            >
+              {addOfficialModules.isPending
+                ? <Loader2 className="h-4 w-4 animate-spin" />
+                : <BookPlus className="h-4 w-4" />}
+              {missingOfficialModules.length > 0
+                ? `Agregar ${missingOfficialModules.length} módulos oficiales faltantes`
+                : 'Ruta oficial completa'}
+            </Button>
+            {syncMessage && <p className="mt-1 text-xs text-muted-foreground">{syncMessage}</p>}
+          </div>
           <Button onClick={() => { setEditingModule(undefined); setModuleFormOpen(true) }} className="gap-2" size="sm">
             <Plus className="h-4 w-4" />
             Nuevo módulo

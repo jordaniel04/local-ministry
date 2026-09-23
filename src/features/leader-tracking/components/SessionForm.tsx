@@ -137,6 +137,12 @@ export function SessionForm({ open, onClose, session }: Props) {
             <Textarea id="agreements" value={form.agreements} onChange={set('agreements')} rows={2} placeholder="Compromisos adquiridos, próximos pasos..." />
           </div>
 
+          {(createSession.isError || updateSession.isError) && (
+            <p role="alert" className="text-sm text-destructive">
+              No se pudo guardar la sesión. Comprueba la conexión e inténtalo de nuevo.
+            </p>
+          )}
+
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>Cancelar</Button>
             <Button type="submit" disabled={isPending || !form.leader_id || !form.session_date}>

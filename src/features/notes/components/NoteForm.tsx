@@ -121,6 +121,12 @@ export function NoteForm({ open, onClose, note }: Props) {
             <Textarea id="improvements" value={form.improvements} onChange={set('improvements')} rows={2} placeholder="Áreas de mejora, observaciones..." />
           </div>
 
+          {(createNote.isError || updateNote.isError) && (
+            <p role="alert" className="text-sm text-destructive">
+              No se pudo guardar la nota. Comprueba la conexión e inténtalo de nuevo.
+            </p>
+          )}
+
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>Cancelar</Button>
             <Button type="submit" disabled={isPending || !form.title || !form.exposition_date}>

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Pencil, UserX } from 'lucide-react'
+import { ArrowLeft, Pencil, UserX, BookOpen, ClipboardList, CalendarCheck, HeartHandshake } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { usePerson, useDeactivatePerson } from '../hooks/usePeople'
@@ -111,6 +111,27 @@ export function PersonDetail() {
             </div>
           </div>
         </div>
+
+        {/* Accesos a procesos relacionados */}
+        <section className="space-y-3">
+          <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+            Procesos relacionados
+          </p>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <Button variant="outline" size="sm" className="justify-start gap-2" onClick={() => navigate(`/formation?person=${person.id}`)}>
+              <BookOpen className="h-4 w-4" /> Formación
+            </Button>
+            <Button variant="outline" size="sm" className="justify-start gap-2" onClick={() => navigate(`/tasks?person=${person.id}`)}>
+              <ClipboardList className="h-4 w-4" /> Tareas
+            </Button>
+            <Button variant="outline" size="sm" className="justify-start gap-2" onClick={() => navigate(`/attendance?person=${person.id}`)}>
+              <CalendarCheck className="h-4 w-4" /> Asistencia
+            </Button>
+            <Button variant="outline" size="sm" className="justify-start gap-2" onClick={() => navigate(`/leader-tracking?person=${person.id}`)}>
+              <HeartHandshake className="h-4 w-4" /> Seguimiento
+            </Button>
+          </div>
+        </section>
 
         {/* Datos personales */}
         <section className="space-y-4">

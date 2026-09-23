@@ -1,13 +1,14 @@
 import { useState } from 'react'
-import { Pencil, ChevronDown, ChevronUp, Plus, Search } from 'lucide-react'
+import { Pencil, ChevronDown, ChevronUp, Plus, Search, Users, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { useMinistries } from '../hooks/useMinistries'
+import { useDeleteMinistry, useMinistries } from '../hooks/useMinistries'
 import { MinistryForm } from './MinistryForm'
 import { LeaderAssigner } from './LeaderAssigner'
 import type { MinistryWithLeaders } from '../types'
 
 export function MinistriesList() {
   const { data: ministries, isLoading, error } = useMinistries()
+  const deleteMinistry = useDeleteMinistry()
 
   const [formOpen, setFormOpen] = useState(false)
   const [editing, setEditing] = useState<MinistryWithLeaders | undefined>()
@@ -35,26 +36,39 @@ export function MinistriesList() {
     setEditing(undefined)
   }
 
+  async function handleDelete(m: MinistryWithLeaders) {
+    if (!window.confirm(`¿Eliminar el ministerio "${m.name}"? Esta acción también quitará sus asignaciones de líderes.`)) return
+    await deleteMinistry.mutateAsync(m.id)
+  }
+
   function MinistryCard({ m }: { m: MinistryWithLeaders }) {
     const isExpanded = expandedId === m.id
     return (
-      <div className="border rounded-lg bg-card">
+      <div className="group overflow-hidden rounded-xl border bg-card shadow-sm transition-shadow hover:shadow-md">
         {/* Cabecera del card */}
-        <div className="flex items-center gap-2 px-3 py-3">
+        <div className="flex items-center gap-3 border-l-4 border-l-primary/70 px-4 py-4">
           {/* Área clickeable principal */}
           <button
             className="flex-1 text-left min-w-0 overflow-hidden"
             onClick={() => toggleExpand(m.id)}
           >
-            <span className="font-medium text-sm leading-tight">{m.name}</span>
+            <span className="font-semibold leading-tight">{m.name}</span>
             {m.description && (
               <p className="text-xs text-muted-foreground mt-0.5 truncate">{m.description}</p>
+            )}
+            {m.leaders.length > 0 && (
+              <p className="mt-2 truncate text-xs text-muted-foreground">
+                <span className="font-medium text-foreground/80">Líder:</span>{' '}
+                {m.leaders.slice(0, 2).map((leader) => `${leader.first_name} ${leader.last_name}`.trim()).join(' · ')}
+                {m.leaders.length > 2 && ` +${m.leaders.length - 2}`}
+              </p>
             )}
           </button>
 
           {/* Chip líderes — siempre visible, separado del nombre */}
-          <span className="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded-full shrink-0 whitespace-nowrap">
-            {m.leaders.length} {m.leaders.length === 1 ? 'líder' : 'líderes'}
+          <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium shrink-0 whitespace-nowrap ${m.leaders.length ? 'bg-primary/10 text-primary' : 'bg-amber-500/10 text-amber-600 dark:text-amber-400'}`}>
+            <Users className="h-3.5 w-3.5" />
+            {m.leaders.length ? 'Con líder' : 'Sin líder'}
           </span>
 
           {/* Acciones — tamaño de toque 44px mínimo */}
@@ -67,21 +81,22 @@ export function MinistriesList() {
             >
               <Pencil className="h-4 w-4" />
             </Button>
-            {/* Botón desactivar oculto por ahora */}
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => toggleExpand(m.id)}
-              className="h-9 w-9"
+              onClick={() => handleDelete(m)}
+              disabled={deleteMinistry.isPending}
+              className="h-9 w-9 text-muted-foreground hover:text-destructive"
+              title="Eliminar ministerio"
             >
-              {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+              <Trash2 className="h-4 w-4" />
             </Button>
           </div>
         </div>
 
         {/* Panel expandido: asignación de líderes */}
         {isExpanded && (
-          <div className="border-t px-3 py-3 bg-muted/30">
+          <div className="border-t bg-muted/30 px-4 py-4">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-3">
               Líderes
             </p>
@@ -94,10 +109,14 @@ export function MinistriesList() {
 
   return (
     <>
-      <div className="space-y-3">
+      <div className="space-y-5">
+        <div className="flex items-center justify-between gap-3">
+          <p className="text-sm font-semibold">Directorio de ministerios</p>
+          <span className="text-xs text-muted-foreground">{active.length} activos</span>
+        </div>
         {/* Buscador + botón nuevo */}
-        <div className="flex gap-2">
-          <div className="flex items-center gap-2 flex-1 rounded-lg border border-input bg-background px-3 py-2">
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <div className="flex min-h-10 flex-1 items-center gap-2 rounded-lg border border-input bg-background px-3 py-2 shadow-sm focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20">
             <Search className="h-4 w-4 text-muted-foreground shrink-0" />
             <input
               type="text"

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useLeaderSessions } from '../hooks/useLeaderSessions'
@@ -7,6 +8,8 @@ import { SessionForm } from './SessionForm'
 import type { LeaderSessionWithPerson } from '../types'
 
 export function LeaderSessionsList() {
+  const [searchParams] = useSearchParams()
+  const personId = searchParams.get('person')
   const { data: sessions, isLoading, error } = useLeaderSessions()
   const [formOpen, setFormOpen] = useState(false)
   const [editing, setEditing] = useState<LeaderSessionWithPerson | undefined>()
@@ -39,13 +42,13 @@ export function LeaderSessionsList() {
               <div key={i} className="h-16 rounded-lg bg-muted animate-pulse" />
             ))}
           </div>
-        ) : (sessions ?? []).length === 0 ? (
+        ) : (sessions ?? []).filter((session) => !personId || session.leader_id === personId).length === 0 ? (
           <div className="text-center py-12 text-muted-foreground">
             No hay sesiones 1:1 registradas aún.
           </div>
         ) : (
           <div className="space-y-2">
-            {(sessions ?? []).map((session) => (
+            {(sessions ?? []).filter((session) => !personId || session.leader_id === personId).map((session) => (
               <SessionCard key={session.id} session={session} onEdit={openEdit} />
             ))}
           </div>

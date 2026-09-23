@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useTasks } from '../hooks/useTasks'
@@ -14,6 +15,8 @@ const FILTERS: { label: string; value: TaskStatus | 'all' }[] = [
 ]
 
 export function TasksList() {
+  const [searchParams] = useSearchParams()
+  const personId = searchParams.get('person')
   const { data: tasks, isLoading, error } = useTasks()
   const [formOpen, setFormOpen] = useState(false)
   const [editing, setEditing] = useState<TaskWithRelations | undefined>()
@@ -22,8 +25,9 @@ export function TasksList() {
   if (error) return <p className="text-destructive text-sm">Error al cargar tareas.</p>
 
   // Estado derivado: filtrar sin useState extra
-  const filtered = (tasks ?? []).filter(
-    (t) => filter === 'all' || t.status === filter
+  const filtered = (tasks ?? []).filter((t) =>
+    (!personId || t.related_person_id === personId) &&
+    (filter === 'all' || t.status === filter)
   )
 
   function openEdit(task: TaskWithRelations) {

@@ -36,3 +36,4 @@ dist-ssr
 # Generated analysis and browser artifacts
 /.playwright-mcp/
 /graphify-out/
+.vercel

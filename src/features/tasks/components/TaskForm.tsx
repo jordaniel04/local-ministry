@@ -241,6 +241,12 @@ export function TaskForm({ open, onClose, task }: Props) {
             />
           </div>
 
+          {(createTask.isError || updateTask.isError) && (
+            <p role="alert" className="text-sm text-destructive">
+              No se pudo guardar la tarea. Comprueba la conexión e inténtalo de nuevo.
+            </p>
+          )}
+
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>
               Cancelar

@@ -1,23 +1,16 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
-import { Users, Church, BookOpen, ClipboardList, CalendarCheck, FileText, BarChart3, LogOut, HeartHandshake, Sun, Moon, MoreHorizontal } from 'lucide-react'
+import { BookOpen, CalendarCheck, BarChart3, LogOut, Sun, Moon, MoreHorizontal, Settings2 } from 'lucide-react'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import { signOut } from '@/features/auth/hooks/useAuth'
 import { useThemeStore } from '@/store/themeStore'
 
 const navItems = [
-  { to: '/dashboard', icon: BarChart3, label: 'Dashboard' },
-  { to: '/people', icon: Users, label: 'Personas' },
-  { to: '/ministries', icon: Church, label: 'Ministerios' },
+  { to: '/dashboard', icon: BarChart3, label: 'Inicio' },
   { to: '/formation', icon: BookOpen, label: 'Formación' },
   { to: '/attendance', icon: CalendarCheck, label: 'Asistencia' },
-  { to: '/tasks', icon: ClipboardList, label: 'Tareas' },
-  { to: '/notes', icon: FileText, label: 'Notas' },
-  { to: '/leader-tracking', icon: HeartHandshake, label: 'Seguimiento' },
+  { to: '/settings', icon: Settings2, label: 'Configuración' },
 ]
-
-// En móvil mostramos solo los 4 primeros en la barra inferior; el resto en un menú "Más"
-const BOTTOM_NAV_LIMIT = 4
 
 export function AppLayout() {
   const navigate = useNavigate()
@@ -29,8 +22,12 @@ export function AppLayout() {
     navigate('/login')
   }
 
-  const primaryItems = navItems.slice(0, BOTTOM_NAV_LIMIT)
-  const secondaryItems = navItems.slice(BOTTOM_NAV_LIMIT)
+  // En móvil priorizamos los cuatro flujos que se usan durante la semana.
+  const mobilePrimaryPaths = ['/dashboard', '/attendance', '/formation', '/settings']
+  const primaryItems = mobilePrimaryPaths
+    .map((path) => navItems.find((item) => item.to === path))
+    .filter((item): item is typeof navItems[number] => Boolean(item))
+  const secondaryItems = navItems.filter((item) => !mobilePrimaryPaths.includes(item.to))
 
   return (
     <div className="flex h-screen bg-background">

@@ -21,6 +21,14 @@ type Props = {
   onNewPerson: () => void
 }
 
+function normalizeSearchText(value: string) {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLocaleLowerCase('es')
+    .trim()
+}
+
 export function PeopleList({ onNewPerson }: Props) {
   const navigate = useNavigate()
   const { data: people, isLoading, error } = usePeople()
@@ -29,8 +37,8 @@ export function PeopleList({ onNewPerson }: Props) {
 
   const filtered = (people ?? []).filter((p: Person) => {
     const matchesType = filter === 'all' || p.person_type === filter
-    const fullName = `${p.first_name} ${p.last_name}`.toLowerCase()
-    const matchesSearch = fullName.includes(search.toLowerCase())
+    const fullName = normalizeSearchText(`${p.first_name} ${p.last_name}`)
+    const matchesSearch = fullName.includes(normalizeSearchText(search))
     return matchesType && matchesSearch && p.is_active
   })
 

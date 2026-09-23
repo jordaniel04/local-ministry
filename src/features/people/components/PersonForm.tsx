@@ -134,16 +134,22 @@ export function PersonForm({ open, onClose, person }: Props) {
         await createPerson.mutateAsync(payload)
       }
       onClose()
-    } catch {
+    } catch (error) {
+      if (error instanceof Error && error.message === 'DUPLICATE_PERSON_NAME') {
+        setError('Ya existe una persona con esos nombres y apellidos.')
+        return
+      }
       setError('Ocurrió un error al guardar. Intenta de nuevo.')
     }
   }
 
   const isPending = createPerson.isPending || updatePerson.isPending
+  const needsValueClass = (value: string | null | undefined) =>
+    value?.trim() ? '' : 'border-amber-500/60 bg-amber-500/5 dark:border-amber-400/60 dark:bg-amber-400/10'
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-h-[90vh] w-[calc(100%-1.5rem)] max-w-2xl overflow-y-auto p-5 sm:p-6">
         <DialogHeader>
           <DialogTitle>{isEditing ? 'Editar persona' : 'Nueva persona'}</DialogTitle>
         </DialogHeader>
@@ -155,11 +161,12 @@ export function PersonForm({ open, onClose, person }: Props) {
             <p className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
               Datos personales
             </p>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="first_name">Nombres *</Label>
                 <Input
                   id="first_name"
+                  className={needsValueClass(form.first_name)}
                   value={form.first_name}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => set('first_name', e.target.value)}
                   required
@@ -169,6 +176,7 @@ export function PersonForm({ open, onClose, person }: Props) {
                 <Label htmlFor="last_name">Apellidos *</Label>
                 <Input
                   id="last_name"
+                  className={needsValueClass(form.last_name)}
                   value={form.last_name}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => set('last_name', e.target.value)}
                   required
@@ -176,11 +184,12 @@ export function PersonForm({ open, onClose, person }: Props) {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="birth_date">Fecha de nacimiento</Label>
                 <Input
                   id="birth_date"
+                  className={needsValueClass(form.birth_date)}
                   type="date"
                   value={form.birth_date}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => set('birth_date', e.target.value)}
@@ -192,9 +201,9 @@ export function PersonForm({ open, onClose, person }: Props) {
                   value={form.marital_status}
                   onValueChange={(v) => set('marital_status', v as MaritalStatus)}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className={`w-full ${needsValueClass(form.marital_status)}`}>
                     <SelectValue placeholder="Seleccionar...">
-                      {form.marital_status ? MARITAL_STATUS_LABELS[form.marital_status] : ''}
+                      {(value) => value ? MARITAL_STATUS_LABELS[value as MaritalStatus] : 'Seleccionar...'}
                     </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
@@ -212,9 +221,9 @@ export function PersonForm({ open, onClose, person }: Props) {
                 value={form.person_type}
                 onValueChange={(v) => set('person_type', v as PersonType)}
               >
-                <SelectTrigger>
-                  <SelectValue>
-                    {PERSON_TYPE_LABELS[form.person_type]}
+                <SelectTrigger className={`w-full ${needsValueClass(form.person_type)}`}>
+                  <SelectValue placeholder="Seleccionar tipo...">
+                    {(value) => value ? PERSON_TYPE_LABELS[value as PersonType] : 'Seleccionar tipo...'}
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
@@ -237,6 +246,7 @@ export function PersonForm({ open, onClose, person }: Props) {
               <Label htmlFor="phone">Teléfono</Label>
               <Input
                 id="phone"
+                className={needsValueClass(form.phone)}
                 type="tel"
                 value={form.phone}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => set('phone', e.target.value)}
@@ -246,6 +256,7 @@ export function PersonForm({ open, onClose, person }: Props) {
               <Label htmlFor="address">Dirección</Label>
               <Input
                 id="address"
+                className={needsValueClass(form.address)}
                 value={form.address}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => set('address', e.target.value)}
               />
@@ -260,20 +271,22 @@ export function PersonForm({ open, onClose, person }: Props) {
               Historia espiritual
             </p>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="conversion_date">Fecha de conversión</Label>
+                <Label className="min-h-10 items-end" htmlFor="conversion_date">Fecha de conversión</Label>
                 <Input
                   id="conversion_date"
+                  className={needsValueClass(form.conversion_date)}
                   type="date"
                   value={form.conversion_date}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => set('conversion_date', e.target.value)}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="water_baptism_date">Fecha de bautismo en agua</Label>
+                <Label className="min-h-10 items-end" htmlFor="water_baptism_date">Fecha de bautismo en agua</Label>
                 <Input
                   id="water_baptism_date"
+                  className={needsValueClass(form.water_baptism_date)}
                   type="date"
                   value={form.water_baptism_date}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => set('water_baptism_date', e.target.value)}
@@ -281,17 +294,17 @@ export function PersonForm({ open, onClose, person }: Props) {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label>Experiencia con el Espíritu Santo</Label>
                 <Select
                   value={form.holy_spirit_experience}
                   onValueChange={(v) => set('holy_spirit_experience', v as HolySpiritExperience)}
                 >
-                  <SelectTrigger>
-                    <SelectValue>
-                      {HOLY_SPIRIT_LABELS[form.holy_spirit_experience]}
-                    </SelectValue>
+                  <SelectTrigger className={`w-full ${needsValueClass(form.holy_spirit_experience)}`}>
+                  <SelectValue placeholder="Seleccionar experiencia...">
+                    {(value) => value ? HOLY_SPIRIT_LABELS[value as HolySpiritExperience] : 'Seleccionar experiencia...'}
+                  </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {(Object.entries(HOLY_SPIRIT_LABELS) as [HolySpiritExperience, string][]).map(([value, label]) => (
@@ -301,11 +314,12 @@ export function PersonForm({ open, onClose, person }: Props) {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="holy_spirit_baptism_date">
+                <Label className="min-h-10 items-end" htmlFor="holy_spirit_baptism_date">
                   Fecha de bautismo E.S.
                 </Label>
                 <Input
                   id="holy_spirit_baptism_date"
+                  className={needsValueClass(form.holy_spirit_baptism_date)}
                   type="date"
                   value={form.holy_spirit_baptism_date}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -331,7 +345,7 @@ export function PersonForm({ open, onClose, person }: Props) {
               rows={3}
               value={form.notes}
               onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => set('notes', e.target.value)}
-              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
+              className={`w-full rounded-md border border-input bg-background px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring ${needsValueClass(form.notes)}`}
               placeholder="Observaciones sobre la persona..."
             />
           </div>
