@@ -3,42 +3,81 @@ import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/store/authStore'
 
 export function useAuthInit() {
-  const { setUser, clear } = useAuthStore()
+  const { setUser, clear, setError, setLoading } = useAuthStore()
 
   useEffect(() => {
-    // Al montar: verificar si hay sesión activa
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (!session?.user) {
-        clear()
-        return
-      }
-      const role = await fetchRole(session.user.id)
-      setUser(session.user, role)
-    })
+    let disposed = false
+    let revision = 0
+    let deferred: ReturnType<typeof setTimeout> | undefined
+    let controller: AbortController | undefined
+    let deadline: ReturnType<typeof setTimeout> | undefined
 
-    // Escuchar cambios de sesión (login / logout / token refresh)
+    const cancelPending = () => {
+      clearTimeout(deferred)
+      clearTimeout(deadline)
+      controller?.abort()
+    }
+    const startDeadline = () => {
+      deadline = setTimeout(() => {
+        revision += 1
+        cancelPending()
+        setError('No pudimos completar el inicio. Revisa tu conexión e inténtalo de nuevo.')
+      }, 15000)
+    }
+
+    setLoading(true)
+    startDeadline()
+    // INITIAL_SESSION también entrega la sesión guardada al abrir la app.
+    // Este callback debe terminar antes de hacer otra petición a Supabase.
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (event === 'SIGNED_OUT' || !session?.user) {
+      (_event, session) => {
+        if (disposed) return
+        const currentRevision = ++revision
+        cancelPending()
+        if (!session?.user) {
           clear()
           return
         }
-        const role = await fetchRole(session.user.id)
-        setUser(session.user, role)
+        setLoading(true)
+        startDeadline()
+        const user = session.user
+        deferred = setTimeout(() => {
+          controller = new AbortController()
+          void fetchRole(user.id, controller.signal).then((role) => {
+            if (disposed || currentRevision !== revision) return
+            clearTimeout(deadline)
+            setUser(user, role)
+          }).catch(() => {
+            if (disposed || currentRevision !== revision) return
+            clearTimeout(deadline)
+            setError('No pudimos cargar tu perfil. Revisa tu conexión e inténtalo de nuevo.')
+          })
+        }, 0)
       }
     )
 
-    return () => subscription.unsubscribe()
-  }, [])
+    return () => {
+      disposed = true
+      revision += 1
+      cancelPending()
+      subscription.unsubscribe()
+    }
+  }, [setUser, clear, setError, setLoading])
 }
 
-async function fetchRole(userId: string) {
-  const { data } = await supabase
+async function fetchRole(userId: string, signal: AbortSignal) {
+  const { data, error } = await supabase
     .from('profiles')
     .select('role')
     .eq('id', userId)
+    .abortSignal(signal)
     .single()
-  return (data?.role as 'admin' | 'secretary' | 'pastor') ?? 'secretary'
+  if (error) throw error
+  const role = data?.role
+  if (role !== 'admin' && role !== 'secretary' && role !== 'pastor') {
+    throw new Error('Perfil sin rol válido')
+  }
+  return role
 }
 
 export async function signIn(email: string, password: string) {
