@@ -18,11 +18,14 @@ type Props = {
   onClose: () => void
   module?: FormationModule
   nextOrderIndex: number
+  routeId: string
+  nextRouteOrderIndex: number
 }
 
-export function ModuleForm({ open, onClose, module, nextOrderIndex }: Props) {
+export function ModuleForm({ open, onClose, module, nextOrderIndex, routeId, nextRouteOrderIndex }: Props) {
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
+  const [error, setError] = useState('')
   const createModule = useCreateModule()
   const updateModule = useUpdateModule()
 
@@ -37,15 +40,23 @@ export function ModuleForm({ open, onClose, module, nextOrderIndex }: Props) {
   }, [module, open])
 
   async function handleSubmit(e: React.FormEvent) {
+    setError('')
     e.preventDefault()
-    if (module) {
-      await updateModule.mutateAsync({ id: module.id, name, description: description || null })
-    } else {
-      await createModule.mutateAsync({ name, description: description || null, order_index: nextOrderIndex })
+    try {
+      if (module) {
+        await updateModule.mutateAsync({ id: module.id, name, description: description || null })
+      } else {
+        await createModule.mutateAsync({
+          module: { name, description: description || null, order_index: nextOrderIndex },
+          routeId,
+          routeOrderIndex: nextRouteOrderIndex,
+        })
+      }
+      onClose()
+    } catch {
+      setError('No se pudo guardar o asociar el manual. Revisa los permisos y la ruta seleccionada.')
     }
-    onClose()
   }
-
   const isPending = createModule.isPending || updateModule.isPending
 
   return (
@@ -55,6 +66,7 @@ export function ModuleForm({ open, onClose, module, nextOrderIndex }: Props) {
           <DialogTitle>{module ? 'Editar módulo' : 'Nuevo módulo'}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
+          {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
           <div className="space-y-1.5">
             <Label htmlFor="name">Nombre *</Label>
             <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required placeholder="Ej: Consolidado, Discipulado 1..." />

@@ -1,15 +1,21 @@
 import { useState } from 'react'
 import { Plus, Pencil, Trash2, ChevronDown, ChevronUp, BookOpen, BookPlus, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { useModules, useDeleteModule, useDeleteLesson, useAddMissingOfficialModules } from '../hooks/useFormation'
+import { useModules, useDeleteLesson, useAddMissingOfficialModules } from '../hooks/useFormation'
+import { useRemoveRouteModule, useRouteModules } from '../hooks/useRoutes'
+import type { FormationRoute } from '../hooks/useRoutes'
 import { ModuleForm } from './ModuleForm'
 import { LessonForm } from './LessonForm'
 import type { FormationModule, FormationLesson, ModuleWithLessons } from '../types'
 import { matchesOfficialModule, OFFICIAL_ROUTE_MODULES } from '../officialRoute'
 
-export function CurriculumManager() {
+export function CurriculumManager({ route }: { route: FormationRoute }) {
   const { data: modules, isLoading, error } = useModules()
-  const deleteModule = useDeleteModule()
+  const { data: routeModules = [], isLoading: routeModulesLoading, error: routeModulesError } = useRouteModules(route.id)
+  const visibleModules = routeModules
+    .map((entry) => modules?.find((module) => module.id === entry.module_id))
+    .filter((module): module is ModuleWithLessons => Boolean(module))
+  const removeModule = useRemoveRouteModule()
   const deleteLesson = useDeleteLesson()
   const addOfficialModules = useAddMissingOfficialModules()
 
@@ -20,8 +26,9 @@ export function CurriculumManager() {
   const [editingLesson, setEditingLesson] = useState<FormationLesson | undefined>()
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [syncMessage, setSyncMessage] = useState('')
+  const [moduleMessage, setModuleMessage] = useState('')
 
-  if (error) return <p className="text-destructive text-sm">Error al cargar currículo.</p>
+  if (error) return <p className="text-destructive text-sm">Error al cargar los manuales.</p>
 
   function openNewLesson(m: ModuleWithLessons) {
     setLessonFormModule(m)
@@ -36,9 +43,14 @@ export function CurriculumManager() {
   }
 
   async function handleDeleteModule(m: ModuleWithLessons) {
-    if (!confirm(`¿Eliminar el módulo "${m.name}"? Se eliminarán todas sus lecciones.`)) return
-    await deleteModule.mutateAsync(m.id)
-    if (expandedId === m.id) setExpandedId(null)
+    if (!confirm(`¿Retirar "${m.name}" de esta ruta? Sus lecciones se conservarán.`)) return
+    setModuleMessage('')
+    try {
+      await removeModule.mutateAsync({ routeId: route.id, moduleId: m.id })
+      if (expandedId === m.id) setExpandedId(null)
+    } catch {
+      setModuleMessage('No se puede retirar un manual que ya forma parte de un ciclo de esta ruta.')
+    }
   }
 
   async function handleDeleteLesson(l: FormationLesson) {
@@ -49,7 +61,7 @@ export function CurriculumManager() {
   async function handleAddOfficialModules() {
     setSyncMessage('')
     try {
-      const created = await addOfficialModules.mutateAsync(modules ?? [])
+      const created = await addOfficialModules.mutateAsync({ existingModules: modules ?? [], routeId: route!.id })
       setSyncMessage(created.length > 0
         ? `Se agregaron ${created.length} módulos oficiales.`
         : 'La ruta oficial ya tiene todos sus módulos.')
@@ -70,7 +82,7 @@ export function CurriculumManager() {
             <Button
               variant="outline"
               onClick={handleAddOfficialModules}
-              disabled={addOfficialModules.isPending || missingOfficialModules.length === 0}
+              disabled={route.key !== 'local-miramar' || addOfficialModules.isPending || missingOfficialModules.length === 0}
               className="gap-2"
               size="sm"
             >
@@ -89,17 +101,18 @@ export function CurriculumManager() {
           </Button>
         </div>
 
-        {isLoading ? (
+        {moduleMessage && <p role="alert" className="text-sm text-destructive">{moduleMessage}</p>}
+        {isLoading || routeModulesLoading ? (
           <div className="space-y-2">
             {[...Array(3)].map((_, i) => <div key={i} className="h-12 rounded-lg bg-muted animate-pulse" />)}
           </div>
-        ) : (modules ?? []).length === 0 ? (
+        ) : routeModulesError ? <p className="text-sm text-destructive">No se pudieron cargar los manuales de esta ruta.</p> : visibleModules.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground text-sm">
             No hay módulos definidos. Creá el primero para empezar.
           </div>
         ) : (
           <div className="space-y-2">
-            {(modules ?? []).map((m) => (
+            {visibleModules.map((m) => (
               <div key={m.id} className="border rounded-lg bg-card overflow-hidden">
                 {/* Cabecera del módulo */}
                 <div className="flex items-center gap-2 p-3">
@@ -114,7 +127,7 @@ export function CurriculumManager() {
                     <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { setEditingModule(m); setModuleFormOpen(true) }}>
                       <Pencil className="h-3 w-3" />
                     </Button>
-                    <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={() => handleDeleteModule(m)} disabled={deleteModule.isPending}>
+                    <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={() => void handleDeleteModule(m)} disabled={removeModule.isPending} aria-label={`Retirar ${m.name} de la ruta`} title="Retirar de la ruta">
                       <Trash2 className="h-3 w-3" />
                     </Button>
                     <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setExpandedId(expandedId === m.id ? null : m.id)}>
@@ -164,6 +177,8 @@ export function CurriculumManager() {
         onClose={() => { setModuleFormOpen(false); setEditingModule(undefined) }}
         module={editingModule}
         nextOrderIndex={(modules ?? []).length}
+        routeId={route.id}
+        nextRouteOrderIndex={Math.max(-1, ...routeModules.map((entry) => entry.order_index)) + 1}
       />
 
       {lessonFormModule && (

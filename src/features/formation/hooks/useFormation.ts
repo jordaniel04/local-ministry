@@ -38,19 +38,23 @@ export function useModules() {
 export function useCreateModule() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (module: FormationModuleInsert) => {
-      const { data, error } = await supabase
-        .from('formation_modules')
-        .insert(module)
-        .select()
-        .single()
+    mutationFn: async (values: { module: FormationModuleInsert; routeId: string; routeOrderIndex: number }) => {
+      const { data, error } = await (supabase as any).rpc('create_formation_module_for_route', {
+        p_route_id: values.routeId,
+        p_name: values.module.name,
+        p_description: values.module.description ?? null,
+        p_order_index: values.module.order_index,
+        p_route_order_index: values.routeOrderIndex,
+      })
       if (error) throw error
       return data
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['formation-modules'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['formation-modules'] })
+      queryClient.invalidateQueries({ queryKey: ['formation-route-modules'] })
+    },
   })
 }
-
 export function useUpdateModule() {
   const queryClient = useQueryClient()
   return useMutation({
@@ -64,7 +68,10 @@ export function useUpdateModule() {
       if (error) throw error
       return data
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['formation-modules'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['formation-modules'] })
+      queryClient.invalidateQueries({ queryKey: ['formation-route-modules'] })
+    },
   })
 }
 
@@ -75,7 +82,10 @@ export function useDeleteModule() {
       const { error } = await supabase.from('formation_modules').delete().eq('id', id)
       if (error) throw error
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['formation-modules'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['formation-modules'] })
+      queryClient.invalidateQueries({ queryKey: ['formation-route-modules'] })
+    },
   })
 }
 
@@ -93,7 +103,10 @@ export function useCreateLesson() {
       if (error) throw error
       return data
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['formation-modules'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['formation-modules'] })
+      queryClient.invalidateQueries({ queryKey: ['formation-route-modules'] })
+    },
   })
 }
 
@@ -110,7 +123,10 @@ export function useUpdateLesson() {
       if (error) throw error
       return data
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['formation-modules'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['formation-modules'] })
+      queryClient.invalidateQueries({ queryKey: ['formation-route-modules'] })
+    },
   })
 }
 
@@ -121,23 +137,27 @@ export function useDeleteLesson() {
       const { error } = await supabase.from('formation_lessons').delete().eq('id', id)
       if (error) throw error
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['formation-modules'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['formation-modules'] })
+      queryClient.invalidateQueries({ queryKey: ['formation-route-modules'] })
+    },
   })
 }
 
 // ─── Progreso por persona ─────────────────────────────────────────────────────
 
-export function usePersonProgress(personId: string) {
+export function usePersonProgress(personId: string, moduleIds: string[]) {
+  const orderedModuleIds = [...moduleIds]
   return useQuery({
-    queryKey: ['formation-progress', personId],
-    enabled: !!personId,
+    queryKey: ['formation-progress', personId, orderedModuleIds],
+    enabled: Boolean(personId) && orderedModuleIds.length > 0,
     queryFn: async (): Promise<ModuleWithProgress[]> => {
       // Traer módulos + lecciones
       const { data: modules, error: modError } = await supabase
         .from('formation_modules')
         .select('*, formation_lessons(*)')
         .eq('is_active', true)
-        .order('order_index')
+        .in('id', orderedModuleIds)
       if (modError) throw modError
 
       // Traer progreso de esta persona
@@ -151,7 +171,9 @@ export function usePersonProgress(personId: string) {
         (progress ?? []).map((p) => [p.lesson_id, p])
       )
 
-      return (modules ?? []).map((m) => {
+      return orderedModuleIds.flatMap((moduleId) => {
+        const m = modules?.find((item) => item.id === moduleId)
+        if (!m) return []
         const lessons: LessonWithProgress[] = (m.formation_lessons ?? [])
           .sort((a, b) => a.order_index - b.order_index)
           .map((l) => ({
@@ -167,14 +189,14 @@ export function usePersonProgress(personId: string) {
           ? scores.reduce((a, b) => a + b, 0) / scores.length
           : null
 
-        return {
+        return [{
           ...m,
           formation_lessons: m.formation_lessons ?? [],
           lessons,
           completedCount: completed,
           totalCount: lessons.length,
           averageScore: avg,
-        }
+        }]
       })
     },
   })
@@ -184,7 +206,8 @@ export function useAddMissingOfficialModules() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (existingModules: ModuleWithLessons[]) => {
+    mutationFn: async (values: { existingModules: ModuleWithLessons[]; routeId: string }) => {
+      const existingModules = values.existingModules
       const missingModules = OFFICIAL_ROUTE_MODULES.filter((official) =>
         !existingModules.some((module) => matchesOfficialModule(module.name, official))
       )
@@ -204,34 +227,40 @@ export function useAddMissingOfficialModules() {
 
       if (missingModules.length === 0) return []
 
-      const { data, error } = await supabase
-        .from('formation_modules')
-        .insert(missingModules.map((module) => ({
-          name: module.name,
-          description: module.description,
-          order_index: module.orderIndex,
-          is_active: true,
-        })))
-        .select()
-      if (error) throw error
-      return data
+      const created = []
+      for (const module of missingModules) {
+        const { data, error } = await (supabase as any).rpc('create_formation_module_for_route', {
+          p_route_id: values.routeId,
+          p_name: module.name,
+          p_description: module.description,
+          p_order_index: module.orderIndex,
+          p_route_order_index: module.orderIndex,
+        })
+        if (error) throw error
+        created.push(data)
+      }
+      return created
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['formation-modules'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['formation-modules'] })
+      queryClient.invalidateQueries({ queryKey: ['formation-route-modules'] })
+    },
   })
 }
 
-export function useAllPeopleProgress(personIds: string[]) {
+export function useAllPeopleProgress(personIds: string[], moduleIds: string[]) {
   const sortedPersonIds = [...personIds].sort()
+  const orderedModuleIds = [...moduleIds]
 
   return useQuery({
-    queryKey: ['formation-progress-summary', sortedPersonIds],
-    enabled: sortedPersonIds.length > 0,
+    queryKey: ['formation-progress-summary', sortedPersonIds, orderedModuleIds],
+    enabled: sortedPersonIds.length > 0 && orderedModuleIds.length > 0,
     queryFn: async (): Promise<PersonProgressSummary[]> => {
       const { data: modules, error: modulesError } = await supabase
         .from('formation_modules')
         .select('*, formation_lessons(*)')
         .eq('is_active', true)
-        .order('order_index')
+        .in('id', orderedModuleIds)
       if (modulesError) throw modulesError
 
       const { data: progress, error: progressError } = await supabase
@@ -240,12 +269,13 @@ export function useAllPeopleProgress(personIds: string[]) {
         .in('person_id', sortedPersonIds)
       if (progressError) throw progressError
 
-      const orderedModules = (modules ?? []).map((module) => ({
-        ...module,
-        formation_lessons: (module.formation_lessons ?? []).sort(
-          (a, b) => a.order_index - b.order_index
-        ),
-      }))
+      const orderedModules = orderedModuleIds.flatMap((moduleId) => {
+        const module = modules?.find((item) => item.id === moduleId)
+        return module ? [{
+          ...module,
+          formation_lessons: (module.formation_lessons ?? []).sort((a, b) => a.order_index - b.order_index),
+        }] : []
+      })
       const totalCount = orderedModules.reduce(
         (total, module) => total + module.formation_lessons.length,
         0
@@ -311,9 +341,8 @@ export function useSaveLessonProgress() {
       }
     },
     onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: ['formation-progress', variables.person_id],
-      })
+      queryClient.invalidateQueries({ queryKey: ['formation-progress', variables.person_id] })
+      queryClient.invalidateQueries({ queryKey: ['formation-progress-summary'] })
     },
   })
 }

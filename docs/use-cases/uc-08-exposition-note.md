@@ -1,5 +1,8 @@
 # UC-08 — Registrar Nota de Exposición
 
+> Este caso de uso describe las notas generales de `exposition_notes`. Es distinto del proceso de exposiciones grupales de **Formación → Exposiciones**: allí **Grupos de exposición** crea el grupo y asigna participantes, mientras **Notas de exposición** registra la rúbrica, observaciones y, si el plan tiene el componente «Exposición grupal», envía la nota al Cuaderno de notas. Los datos grupales usan `formation_expositions` y `formation_exposition_members`.
+
+
 ## Descripción
 El admin o secretario registra una nota de una exposición/prédica, con secciones para puntos destacados y áreas de mejora.
 

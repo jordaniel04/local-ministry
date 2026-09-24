@@ -10,6 +10,8 @@ import {
 import { usePeople } from '@/features/people/hooks/usePeople'
 import { cn } from '@/lib/utils'
 import { usePersonProgress } from '../hooks/useFormation'
+import { useLocalRoute } from '../hooks/useEnrollment'
+import { useRouteModules } from '../hooks/useRoutes'
 import { LessonProgressRow } from './LessonProgressRow'
 
 type Props = {
@@ -27,7 +29,10 @@ export function PersonProgressView({ selectedPersonId = '', onPersonChange }: Pr
     if (selectedPersonId) setInternalPersonId(selectedPersonId)
   }, [selectedPersonId])
 
-  const { data: modules, isLoading } = usePersonProgress(currentPersonId)
+  const { data: route, isLoading: routeLoading } = useLocalRoute()
+  const { data: routeModules = [], isLoading: routeModulesLoading } = useRouteModules(route?.id ?? null)
+  const { data: modules, isLoading: modulesLoading } = usePersonProgress(currentPersonId, routeModules.map((entry) => entry.module_id))
+  const isLoading = routeLoading || routeModulesLoading || modulesLoading
   const activePeople = useMemo(
     () => (people ?? []).filter((person) => person.is_active),
     [people]
@@ -88,7 +93,7 @@ export function PersonProgressView({ selectedPersonId = '', onPersonChange }: Pr
 
       {currentPersonId && !isLoading && (modules ?? []).length === 0 && (
         <p className="rounded-2xl border border-dashed p-8 text-center text-sm text-muted-foreground">
-          No hay módulos activos definidos en el currículo.
+          {route ? 'La ruta en curso no tiene manuales activos.' : 'No hay una ruta en curso. Inicia un ciclo desde Configuración.'}
         </p>
       )}
 

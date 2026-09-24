@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
+import { useActiveStudyCycle } from './useStudyCycles'
 
 const db = supabase as any
 
@@ -18,6 +19,7 @@ export type ModuleEnrollment = {
   id: string
   enrollment_id: string
   module_id: string
+  study_cycle_id: string | null
   status: 'in_progress' | 'completed' | 'paused' | 'withdrawn'
   enrollment_type: 'standard' | 'repeat' | 'reinforcement' | 'historical'
   enrolled_at: string
@@ -34,13 +36,15 @@ export type ModuleEnrollment = {
   } | null
 }
 
-export function useLocalEnrollments() {
+export function useLocalEnrollments(routeId: string | null) {
   return useQuery({
-    queryKey: ['local-enrollments'],
+    queryKey: ['local-enrollments', routeId],
+    enabled: Boolean(routeId),
     queryFn: async (): Promise<LocalEnrollment[]> => {
       const { data, error } = await db
         .from('formation_enrollments')
         .select('id,person_id,status,current_module_id,enrolled_at,notes,people(first_name,last_name),formation_modules(name)')
+        .eq('route_id', routeId)
         .order('enrolled_at', { ascending: false })
       if (error) throw error
       return data ?? []
@@ -48,14 +52,16 @@ export function useLocalEnrollments() {
   })
 }
 
-export function useHistoricalModuleCompletions() {
+export function useHistoricalModuleCompletions(routeId: string | null) {
   return useQuery({
-    queryKey: ['historical-module-completions'],
+    queryKey: ['historical-module-completions', routeId],
+    enabled: Boolean(routeId),
     queryFn: async () => {
       const { data, error } = await db
         .from('formation_module_progress')
-        .select('id,status,observed_at,notes,historical_grade,validation_score,validation_result,validation_date,validation_notes,formation_modules(name),formation_enrollments!inner(person_id,people(first_name,last_name))')
+        .select('id,status,observed_at,notes,historical_grade,validation_score,validation_result,validation_date,validation_notes,formation_modules(name),formation_enrollments!inner(person_id,route_id,people(first_name,last_name))')
         .eq('status', 'completed')
+        .eq('formation_enrollments.route_id', routeId)
         .order('observed_at', { ascending: false, nullsFirst: false })
       if (error) throw error
       return data ?? []
@@ -69,7 +75,7 @@ export function useModuleEnrollments() {
     queryFn: async (): Promise<ModuleEnrollment[]> => {
       const { data, error } = await db
         .from('formation_module_enrollments')
-        .select('id,enrollment_id,module_id,status,enrollment_type,enrolled_at,completed_at,notes,final_grade,final_result,evaluated_at,evaluation_notes,formation_modules(name),formation_enrollments!inner(person_id,people(first_name,last_name))')
+        .select('id,enrollment_id,module_id,study_cycle_id,status,enrollment_type,enrolled_at,completed_at,notes,final_grade,final_result,evaluated_at,evaluation_notes,formation_modules(name),formation_enrollments!inner(person_id,route_id,people(first_name,last_name))')
         .order('enrolled_at', { ascending: false })
       if (error) throw error
       return data ?? []
@@ -84,7 +90,7 @@ export function useCurrentModuleEnrollments(moduleId: string) {
     queryFn: async (): Promise<ModuleEnrollment[]> => {
       const { data, error } = await db
         .from('formation_module_enrollments')
-        .select('id,enrollment_id,module_id,status,enrollment_type,enrolled_at,completed_at,notes,final_grade,final_result,evaluated_at,evaluation_notes,formation_modules(name),formation_enrollments!inner(person_id,people(first_name,last_name))')
+        .select('id,enrollment_id,module_id,study_cycle_id,status,enrollment_type,enrolled_at,completed_at,notes,final_grade,final_result,evaluated_at,evaluation_notes,formation_modules(name),formation_enrollments!inner(person_id,route_id,people(first_name,last_name))')
         .eq('module_id', moduleId)
         .eq('status', 'in_progress')
         .order('enrolled_at', { ascending: true })
@@ -107,10 +113,16 @@ export function useStartModuleEnrollments() {
         .from('formation_study_cycles')
         .select('id')
         .eq('status', 'active')
+        .eq('route_id', payload.route_id)
         .order('starts_on', { ascending: false, nullsFirst: false })
         .limit(1)
         .maybeSingle()
       if (cycleError) throw cycleError
+      if (!activeStudyCycle) throw new Error('No hay un ciclo en curso para esta ruta.')
+      const { data: cycleModule, error: moduleError } = await db.from('formation_study_cycle_modules')
+        .select('module_id').eq('study_cycle_id', activeStudyCycle.id).eq('module_id', payload.module_id).maybeSingle()
+      if (moduleError) throw moduleError
+      if (!cycleModule) throw new Error('El manual no pertenece al ciclo en curso.')
       let created = 0
       let skipped = 0
       let failed = 0
@@ -163,7 +175,7 @@ export function useStartModuleEnrollments() {
           const { error } = await db.from('formation_module_enrollments').insert({
             enrollment_id: enrollmentId,
             module_id: payload.module_id,
-            study_cycle_id: activeStudyCycle?.id ?? null,
+            study_cycle_id: activeStudyCycle.id,
             enrollment_type: payload.enrollment_type,
             status: 'in_progress',
           })
@@ -398,14 +410,14 @@ export function useRegisterHistoricalCompletion() {
 }
 
 export function useLocalRoute() {
+  const { data: activeCycle } = useActiveStudyCycle()
   return useQuery({
-    queryKey: ['local-formation-route'],
+    queryKey: ['local-formation-route', activeCycle?.route_id],
+    enabled: Boolean(activeCycle?.route_id),
     queryFn: async () => {
-      const { data, error } = await db
-        .from('formation_routes')
+      const { data, error } = await db.from('formation_routes')
         .select('id,key,name,version')
-        .eq('key', 'local-miramar')
-        .eq('is_active', true)
+        .eq('id', activeCycle!.route_id)
         .single()
       if (error) throw error
       return data as { id: string; key: string; name: string; version: string }

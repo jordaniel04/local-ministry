@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { usePeople } from '@/features/people/hooks/usePeople'
 import { useModules } from '../hooks/useFormation'
 import { useHistoricalModuleCompletions, useLocalRoute, useRegisterHistoricalCompletion } from '../hooks/useEnrollment'
+import { useRouteModules } from '../hooks/useRoutes'
 
 const RESULT_LABELS: Record<string, string> = {
   validated: 'Validado',
@@ -15,7 +16,8 @@ export function HistoricalTrainingPanel({ onMessage }: { onMessage: (message: st
   const { data: people } = usePeople()
   const { data: modules } = useModules()
   const { data: route } = useLocalRoute()
-  const { data: completions } = useHistoricalModuleCompletions()
+  const { data: routeModules = [] } = useRouteModules(route?.id ?? null)
+  const { data: completions } = useHistoricalModuleCompletions(route?.id ?? null)
   const registerCompletion = useRegisterHistoricalCompletion()
   const [personId, setPersonId] = useState('')
   const [moduleId, setModuleId] = useState('')
@@ -29,7 +31,8 @@ export function HistoricalTrainingPanel({ onMessage }: { onMessage: (message: st
   const [validationNotes, setValidationNotes] = useState('')
 
   const activePeople = (people ?? []).filter((person) => person.is_active)
-  const activeModules = (modules ?? []).filter((module) => module.is_active)
+  const routeModuleIds = new Set(routeModules.map((item) => item.module_id))
+  const activeModules = (modules ?? []).filter((module) => module.is_active && routeModuleIds.has(module.id))
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()

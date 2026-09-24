@@ -149,8 +149,8 @@ export function PersonDetail() {
             Procesos relacionados
           </p>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-            <Button variant="outline" size="sm" className="justify-start gap-2" onClick={() => navigate(`/formation?person=${person.id}`)}>
-              <BookOpen className="h-4 w-4" /> Formación
+            <Button variant="outline" size="sm" className="justify-start gap-2" onClick={() => navigate(`/reports?view=route&person=${person.id}`)}>
+              <BookOpen className="h-4 w-4" /> Avance en la Ruta
             </Button>
             <Button variant="outline" size="sm" className="justify-start gap-2" onClick={() => navigate(`/tasks?person=${person.id}`)}>
               <ClipboardList className="h-4 w-4" /> Tareas

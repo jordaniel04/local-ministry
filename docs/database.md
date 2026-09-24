@@ -238,3 +238,22 @@ Sesiones 1:1 entre el admin y un líder. Incluye acuerdos y fecha de próxima se
 | Migración | Fecha | Descripción |
 |---|---|---|
 | `initial_schema` | 2026-06-27 | Creación de las 12 tablas con RLS |
+
+## Formación local vigente (2026-09-24)
+
+El ERD anterior resume el esquema inicial; la formación actual también usa estas relaciones:
+
+| Tabla | Función |
+|---|---|
+| `formation_routes` | Rutas locales con nombre, versión y clave interna estable. |
+| `formation_route_modules` | Manuales asignados y ordenados dentro de cada ruta. |
+| `formation_study_cycles` | Ciclos vinculados a una ruta mediante `route_id`; solo uno puede tener estado `active`. |
+| `formation_study_cycle_modules` | Manuales elegidos para el ciclo y estado de cada uno. Solo admite manuales de la ruta del ciclo. |
+| `formation_enrollments` | Matrícula de la persona en la ruta. |
+| `formation_module_enrollments` | Participación en un manual; cuando se liga a un ciclo debe coincidir con su ruta y uno de sus manuales. |
+| `formation_expositions` y `formation_exposition_members` | Grupos de exposición y sus integrantes. |
+| `formation_assessment_plans` y tablas relacionadas | Plan de notas, componentes, ítems y calificaciones por manual. |
+
+La ruta en curso se deriva del ciclo activo. El índice parcial `formation_one_active_study_cycle_idx` impide dos ciclos activos. La función `activate_formation_study_cycle` pausa el ciclo anterior y exige que el nuevo tenga manuales. `create_formation_module_for_route` crea el manual y lo vincula a la ruta elegida; `update_formation_route_details` cambia nombre y versión sin alterar la clave. Los disparadores de `20260924_study_cycles_follow_route.sql` impiden asociar al ciclo un manual ajeno a su ruta o retirar uno que el ciclo ya usa. La columna `people.participation_status` expresa participación `active`, `inactive` o sin definir y es independiente de `people.is_active`, que controla el archivado.
+
+Estas reglas se introducen en `supabase/migrations/20260924_study_cycles_follow_route.sql`, `20260924_manage_formation_routes.sql`, `20260924_edit_formation_route_details.sql` y `20260924_one_active_study_cycle.sql`. La ejecución de SQL directamente en Supabase debe comprobarse por separado del historial de migraciones del repositorio.

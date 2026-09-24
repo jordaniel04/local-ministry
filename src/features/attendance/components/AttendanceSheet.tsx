@@ -1,5 +1,6 @@
 import { useSessionAttendance, useUpsertAttendance } from '../hooks/useAttendance'
 import { useModuleEnrollments } from '@/features/formation/hooks/useEnrollment'
+import { useActiveStudyCycle } from '@/features/formation/hooks/useStudyCycles'
 import type { AttendanceStatus } from '../types'
 import { ATTENDANCE_STATUS_LABELS, ATTENDANCE_STATUS_COLORS } from '../types'
 import { cn } from '@/lib/utils'
@@ -17,6 +18,7 @@ export function AttendanceSheet({ sessionId }: Props) {
   const [search, setSearch] = useState('')
   const [onlyPending, setOnlyPending] = useState(false)
   const { data: moduleEnrollments, isLoading: isLoadingEnrollments } = useModuleEnrollments()
+  const { data: activeCycle, isLoading: isLoadingCycle } = useActiveStudyCycle()
   const { data: attendanceRecords, isLoading } = useSessionAttendance(sessionId)
   const upsert = useUpsertAttendance(sessionId)
 
@@ -26,7 +28,7 @@ export function AttendanceSheet({ sessionId }: Props) {
   const activePeople = Array.from(
     new Map(
       (moduleEnrollments ?? [])
-        .filter((enrollment) => enrollment.status === 'in_progress' && enrollment.formation_enrollments?.people)
+        .filter((enrollment) => enrollment.study_cycle_id === activeCycle?.id && enrollment.status === 'in_progress' && enrollment.formation_enrollments?.people)
         .map((enrollment) => {
           const person = enrollment.formation_enrollments!.people!
           return [enrollment.formation_enrollments!.person_id, { ...person, id: enrollment.formation_enrollments!.person_id }]
@@ -45,7 +47,7 @@ export function AttendanceSheet({ sessionId }: Props) {
   })
 
 
-  if (isLoading || isLoadingEnrollments) {
+  if (isLoading || isLoadingEnrollments || isLoadingCycle) {
     return (
       <div className="space-y-2 mt-4">
         {[...Array(5)].map((_, i) => <div key={i} className="h-12 rounded-lg bg-muted animate-pulse" />)}

@@ -22,11 +22,39 @@ export function useStudyCycles() {
   })
 }
 
+export function useActiveStudyCycle() {
+  return useQuery({
+    queryKey: ['active-formation-study-cycle'],
+    queryFn: async (): Promise<StudyCycle | null> => {
+      const { data, error } = await db.from('formation_study_cycles')
+        .select('id,route_id,name,starts_on,status')
+        .eq('status', 'active')
+        .maybeSingle()
+      if (error) throw error
+      return data ?? null
+    },
+  })
+}
+
+export function useActivateStudyCycle() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (studyCycleId: string) => {
+      const { error } = await db.rpc('activate_formation_study_cycle', { p_cycle_id: studyCycleId })
+      if (error) throw error
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['formation-study-cycles'] })
+      queryClient.invalidateQueries({ queryKey: ['active-formation-study-cycle'] })
+      queryClient.invalidateQueries({ queryKey: ['local-formation-route'] })
+    },
+  })
+}
 export function useCreateStudyCycle() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (values: { route_id: string | null; name: string; starts_on: string | null }) => {
-      const { data, error } = await db.from('formation_study_cycles').insert(values).select().single()
+      const { data, error } = await db.from('formation_study_cycles').insert({ ...values, status: 'paused' }).select().single()
       if (error) throw error
       return data as StudyCycle
     },

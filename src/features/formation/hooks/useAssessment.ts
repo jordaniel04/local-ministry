@@ -383,6 +383,7 @@ export function useCreateExposition() {
     mutationFn: async (values: {
       module_id: string
       cycle_id: string
+      study_cycle_id: string
       group_name: string
       title: string | null
       planned_at: string | null

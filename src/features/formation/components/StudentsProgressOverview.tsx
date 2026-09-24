@@ -5,6 +5,8 @@ import { Input } from '@/components/ui/input'
 import { usePeople } from '@/features/people/hooks/usePeople'
 import { cn } from '@/lib/utils'
 import { useAllPeopleProgress, useModules } from '../hooks/useFormation'
+import { useLocalRoute } from '../hooks/useEnrollment'
+import { useRouteModules } from '../hooks/useRoutes'
 import type { Person } from '@/features/people/types'
 import type { PersonProgressSummary } from '../types'
 
@@ -47,20 +49,21 @@ export function StudentsProgressOverview({ onSelectPerson }: Props) {
   const boardRef = useRef<HTMLDivElement>(null)
   const { data: people, isLoading: peopleLoading } = usePeople()
   const { data: modules, isLoading: modulesLoading } = useModules()
+  const { data: route, isLoading: routeLoading } = useLocalRoute()
+  const { data: routeModules = [], isLoading: routeModulesLoading } = useRouteModules(route?.id ?? null)
   const activePeople = useMemo(
     () => (people ?? []).filter((person) => person.is_active),
     [people]
   )
   const personIds = useMemo(() => activePeople.map((person) => person.id), [activePeople])
-  const { data: summaries, isLoading: progressLoading } = useAllPeopleProgress(personIds)
+  const routeStages = routeModules
+    .map((entry) => modules?.find((module) => module.id === entry.module_id))
+    .filter((module): module is NonNullable<typeof modules>[number] => Boolean(module?.is_active))
+  const { data: summaries, isLoading: progressLoading } = useAllPeopleProgress(personIds, routeStages.map((module) => module.id))
   const summaryByPerson = useMemo(
     () => new Map((summaries ?? []).map((summary) => [summary.personId, summary])),
     [summaries]
   )
-  const activeModules = (modules ?? []).filter((module) => module.is_active)
-  // La ruta visual se alimenta del catálogo de Supabase. La lista oficial local
-  // solo sirve para sembrar módulos faltantes desde el administrador.
-  const routeStages = activeModules
   const mapHeight = Math.max(680, Math.ceil((routeStages.length + 1) / X_POSITIONS.length) * 170)
   const startPoint: MapPoint = { x: 70, y: mapHeight - 50 }
   const routePoints = createRoutePoints(routeStages.length + 1, mapHeight)
@@ -75,7 +78,7 @@ export function StudentsProgressOverview({ onSelectPerson }: Props) {
       .toLocaleLowerCase('es')
       .includes(normalizedSearch)
   ), [activePeople, normalizedSearch])
-  const isLoading = peopleLoading || modulesLoading || progressLoading
+  const isLoading = peopleLoading || modulesLoading || progressLoading || routeLoading || routeModulesLoading
 
   useLayoutEffect(() => {
     if (!boardRef.current || isLoading) return
@@ -91,6 +94,12 @@ export function StudentsProgressOverview({ onSelectPerson }: Props) {
     }, boardRef)
     return () => context.revert()
   }, [animationRun, isLoading])
+
+  if (!isLoading && routeStages.length === 0) {
+    return <p className="rounded-2xl border border-dashed p-8 text-center text-sm text-muted-foreground">
+      {route ? 'La ruta en curso no tiene manuales activos.' : 'No hay una ruta en curso. Inicia un ciclo desde Configuración.'}
+    </p>
+  }
 
   return (
     <section className="space-y-4">

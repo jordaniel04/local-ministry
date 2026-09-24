@@ -27,7 +27,7 @@ export function DashboardView() {
         <div className="mb-4"><h2 className="font-semibold">Trabajo de la semana</h2><p className="mt-1 text-sm text-muted-foreground">Accede primero a los registros que usarás durante la semana.</p></div>
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           <ActionCard to="/attendance" title={attendance.data ? 'Registrar asistencia' : 'Crear primera sesión'} description={attendance.data ? `Última sesión: ${attendance.data.title} · ${attendance.data.attendees} asistentes registrados.` : 'Aún no hay sesiones realizadas. Crea la primera cuando corresponda.'} icon={CalendarCheck} />
-          <ActionCard to="/formation?section=evaluation&view=gradebook" title="Notas de formación" count={formation.data?.activeModuleEnrollments ?? 0} description="Abre el cuaderno para registrar o completar las notas de los manuales en curso." icon={BookOpen} />
+          <ActionCard to="/formation?section=gradebook" title="Notas de formación" count={formation.data?.activeModuleEnrollments ?? 0} description="Abre el cuaderno para registrar o completar las notas de los manuales en curso." icon={BookOpen} />
           <ActionCard to="/leader-tracking" title="Seguimiento de líderes" count={withoutSession.length} description={withoutSession.length ? 'Líderes sin una sesión registrada en los últimos 30 días.' : 'Todos los líderes tienen una sesión reciente registrada.'} icon={HeartHandshake} tone={withoutSession.length ? 'warning' : 'default'} />
         </div>
       </section>

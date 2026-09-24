@@ -98,3 +98,11 @@ Resumen:
 - **TanStack Query sobre useEffect+fetch** — caché, loading, error automáticos
 - **shadcn/ui sobre MUI/Chakra** — componentes en el proyecto, control total
 - **PWA** — líderes usan la app desde móvil en campo
+
+## Navegación y formación local vigentes (2026-09-24)
+
+- **Formación** reúne Matrícula, Cuaderno de notas y Exposiciones. Dentro de Exposiciones se separan la creación de grupos y el registro de sus notas.
+- **Configuración** reúne Rutas de formación (incluye manuales y lecciones), Ciclos de estudio y Plan de notas.
+- **Reportes** contiene Avance en la Ruta, con el recorrido general y la vista de cada persona. El enlace antiguo a Currículo redirige a Rutas.
+
+Una ruta define los manuales disponibles. Cada ciclo pertenece a una ruta y selecciona los manuales que cursará. Solo un ciclo puede estar en curso; al iniciar otro, el anterior queda pausado. La ruta que muestran Matrícula y Avance en la Ruta se obtiene del ciclo activo. Los ciclos nuevos se crean pausados y se inician después de asignarles al menos un manual. Consulta [Base de datos](database.md) y [Registrar progreso de formación](use-cases/uc-04-track-formation.md).

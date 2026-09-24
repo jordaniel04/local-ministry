@@ -1,13 +1,14 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
-import { BookOpen, CalendarCheck, BarChart3, LogOut, Sun, Moon, Settings2 } from 'lucide-react'
+import { BookOpen, CalendarCheck, BarChart3, LayoutDashboard, LogOut, Sun, Moon, Settings2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { signOut } from '@/features/auth/hooks/useAuth'
 import { useThemeStore } from '@/store/themeStore'
 
 const navItems = [
-  { to: '/dashboard', icon: BarChart3, label: 'Inicio' },
+  { to: '/dashboard', icon: LayoutDashboard, label: 'Inicio' },
   { to: '/attendance', icon: CalendarCheck, label: 'Asistencia' },
   { to: '/formation', icon: BookOpen, label: 'Formación' },
+  { to: '/reports', icon: BarChart3, label: 'Reportes' },
   { to: '/settings', icon: Settings2, label: 'Configuración' },
 ]
 
