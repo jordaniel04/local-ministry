@@ -301,6 +301,7 @@ export type Database = {
           last_name: string
           marital_status: string | null
           notes: string | null
+          participation_status: 'active' | 'inactive' | null
           person_type: string
           phone: string | null
           updated_at: string
@@ -321,6 +322,7 @@ export type Database = {
           last_name: string
           marital_status?: string | null
           notes?: string | null
+          participation_status?: 'active' | 'inactive' | null
           person_type: string
           phone?: string | null
           updated_at?: string
@@ -341,6 +343,7 @@ export type Database = {
           last_name?: string
           marital_status?: string | null
           notes?: string | null
+          participation_status?: 'active' | 'inactive' | null
           person_type?: string
           phone?: string | null
           updated_at?: string

@@ -25,6 +25,7 @@ import {
 import type {
   Person,
   PersonType,
+  ParticipationStatus,
   MaritalStatus,
   HolySpiritExperience,
 } from '../types'
@@ -36,6 +37,7 @@ type FormState = {
   address: string
   birth_date: string
   person_type: PersonType
+  participation_status: ParticipationStatus | null
   marital_status: MaritalStatus | ''
   conversion_date: string
   water_baptism_date: string
@@ -51,6 +53,7 @@ const EMPTY_FORM: FormState = {
   address: '',
   birth_date: '',
   person_type: 'visitor',
+  participation_status: null,
   marital_status: '',
   conversion_date: '',
   water_baptism_date: '',
@@ -82,6 +85,7 @@ export function PersonForm({ open, onClose, person }: Props) {
         address: person.address ?? '',
         birth_date: person.birth_date ?? '',
         person_type: person.person_type as PersonType,
+        participation_status: person.participation_status,
         marital_status: (person.marital_status as MaritalStatus) ?? '',
         conversion_date: person.conversion_date ?? '',
         water_baptism_date: person.water_baptism_date ?? '',
@@ -119,6 +123,7 @@ export function PersonForm({ open, onClose, person }: Props) {
       address: form.address.trim() || null,
       birth_date: form.birth_date || null,
       person_type: form.person_type,
+      participation_status: form.participation_status,
       marital_status: form.marital_status || null,
       conversion_date: form.conversion_date || null,
       water_baptism_date: form.water_baptism_date || null,
@@ -235,6 +240,23 @@ export function PersonForm({ open, onClose, person }: Props) {
             </div>
           </div>
 
+          <div className="space-y-2">
+            <Label>Participación actual</Label>
+            <Select
+              value={form.participation_status ?? 'unset'}
+              onValueChange={(value) => set('participation_status', value === 'unset' ? null : value as ParticipationStatus)}
+            >
+              <SelectTrigger className="w-full sm:max-w-xs">
+                <SelectValue>{(value) => value === 'active' ? 'Activo' : value === 'inactive' ? 'Inactivo' : 'Sin definir'}</SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="unset">Sin definir</SelectItem>
+                <SelectItem value="active">Activo</SelectItem>
+                <SelectItem value="inactive">Inactivo</SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">Ayuda a identificar a quién acompañar o visitar. No cambia su historial.</p>
+          </div>
           <Separator />
 
           {/* Contacto */}

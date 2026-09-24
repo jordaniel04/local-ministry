@@ -9,6 +9,7 @@ import type { Person, PersonType } from '../types'
 import { PERSON_TYPE_LABELS } from '../types'
 
 type FilterType = PersonType | 'all'
+type ParticipationFilter = 'all' | 'active' | 'inactive' | 'unset'
 
 const FILTERS: { value: FilterType; label: string }[] = [
   { value: 'all', label: 'Todos' },
@@ -34,12 +35,15 @@ export function PeopleList({ onNewPerson }: Props) {
   const { data: people, isLoading, error } = usePeople()
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState<FilterType>('all')
+  const [participationFilter, setParticipationFilter] = useState<ParticipationFilter>('all')
 
   const filtered = (people ?? []).filter((p: Person) => {
     const matchesType = filter === 'all' || p.person_type === filter
     const fullName = normalizeSearchText(`${p.first_name} ${p.last_name}`)
     const matchesSearch = fullName.includes(normalizeSearchText(search))
-    return matchesType && matchesSearch && p.is_active
+    const matchesParticipation = participationFilter === 'all' ||
+      (participationFilter === 'unset' ? p.participation_status === null : p.participation_status === participationFilter)
+    return matchesType && matchesSearch && matchesParticipation && p.is_active
   })
 
   if (error) {
@@ -69,6 +73,29 @@ export function PeopleList({ onNewPerson }: Props) {
         </Button>
       </div>
 
+      <div className="flex gap-2 flex-wrap" role="group" aria-label="Filtrar por participación">
+        {([
+          { value: 'all', label: 'Todos' },
+          { value: 'active', label: 'Activos' },
+          { value: 'inactive', label: 'Inactivos' },
+          { value: 'unset', label: 'Sin definir' },
+        ] as const).map(({ value, label }) => (
+          <button
+            key={value}
+            type="button"
+            onClick={() => setParticipationFilter(value)}
+            aria-pressed={participationFilter === value}
+            className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
+              participationFilter === value
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-muted text-muted-foreground hover:bg-muted/80'
+            }`}
+          >
+            {label} ({(people ?? []).filter((p: Person) => p.is_active &&
+              (value === 'all' || (value === 'unset' ? p.participation_status === null : p.participation_status === value))).length})
+          </button>
+        ))}
+      </div>
       {/* Filtros por tipo */}
       <div className="flex gap-2 flex-wrap">
         {FILTERS.map((f) => (
@@ -84,7 +111,7 @@ export function PeopleList({ onNewPerson }: Props) {
             {f.label}
             {f.value !== 'all' && (
               <span className="ml-1.5 opacity-70">
-                ({(people ?? []).filter((p: Person) => p.person_type === f.value && p.is_active).length})
+                ({(people ?? []).filter((p: Person) => p.person_type === f.value && p.is_active && (participationFilter === 'all' || (participationFilter === 'unset' ? p.participation_status === null : p.participation_status === participationFilter))).length})
               </span>
             )}
           </button>
@@ -100,7 +127,7 @@ export function PeopleList({ onNewPerson }: Props) {
         </div>
       ) : filtered.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
-          {search || filter !== 'all'
+          {search || filter !== 'all' || participationFilter !== 'all'
             ? 'No hay personas que coincidan con el filtro.'
             : 'No hay personas registradas aún.'}
         </div>
@@ -137,7 +164,12 @@ export function PeopleList({ onNewPerson }: Props) {
                 </p>
               </div>
 
-              <PersonBadge type={person.person_type as PersonType} />
+              <div className="flex flex-col items-end gap-1 shrink-0">
+                <PersonBadge type={person.person_type as PersonType} />
+                <span className="text-xs text-muted-foreground">
+                  {person.participation_status === 'active' ? 'Activo' : person.participation_status === 'inactive' ? 'Inactivo' : 'Sin definir'}
+                </span>
+              </div>
             </button>
           ))}
         </div>

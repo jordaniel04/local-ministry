@@ -1,33 +1,24 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
-import { BookOpen, CalendarCheck, BarChart3, LogOut, Sun, Moon, MoreHorizontal, Settings2 } from 'lucide-react'
-import { useState } from 'react'
+import { BookOpen, CalendarCheck, BarChart3, LogOut, Sun, Moon, Settings2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { signOut } from '@/features/auth/hooks/useAuth'
 import { useThemeStore } from '@/store/themeStore'
 
 const navItems = [
   { to: '/dashboard', icon: BarChart3, label: 'Inicio' },
-  { to: '/formation', icon: BookOpen, label: 'Formación' },
   { to: '/attendance', icon: CalendarCheck, label: 'Asistencia' },
+  { to: '/formation', icon: BookOpen, label: 'Formación' },
   { to: '/settings', icon: Settings2, label: 'Configuración' },
 ]
 
 export function AppLayout() {
   const navigate = useNavigate()
   const { isDark, toggle } = useThemeStore()
-  const [showMore, setShowMore] = useState(false)
 
   async function handleSignOut() {
     await signOut()
     navigate('/login')
   }
-
-  // En móvil priorizamos los cuatro flujos que se usan durante la semana.
-  const mobilePrimaryPaths = ['/dashboard', '/attendance', '/formation', '/settings']
-  const primaryItems = mobilePrimaryPaths
-    .map((path) => navItems.find((item) => item.to === path))
-    .filter((item): item is typeof navItems[number] => Boolean(item))
-  const secondaryItems = navItems.filter((item) => !mobilePrimaryPaths.includes(item.to))
 
   return (
     <div className="flex h-screen bg-background">
@@ -110,7 +101,7 @@ export function AppLayout() {
       {/* ── Bottom navigation — solo visible en móvil ── */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-sidebar border-t border-sidebar-border z-20">
         <div className="flex items-center justify-around px-2 h-16">
-          {primaryItems.map(({ to, icon: Icon, label }) => (
+          {navItems.map(({ to, icon: Icon, label }) => (
             <NavLink
               key={to}
               to={to}
@@ -127,55 +118,7 @@ export function AppLayout() {
               <span className="text-[10px] font-medium leading-none">{label}</span>
             </NavLink>
           ))}
-
-          {/* Botón "Más" para el resto de secciones */}
-          <button
-            onClick={() => setShowMore((v) => !v)}
-            className={cn(
-              'flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg flex-1 transition-colors',
-              showMore ? 'text-primary' : 'text-muted-foreground'
-            )}
-          >
-            <MoreHorizontal className="h-5 w-5" />
-            <span className="text-[10px] font-medium leading-none">Más</span>
-          </button>
         </div>
-
-        {/* Panel "Más" — overlay sobre el contenido */}
-        {showMore && (
-          <>
-            {/* Fondo semitransparente para cerrar al tocar afuera */}
-            <div
-              className="fixed inset-0 z-10"
-              onClick={() => setShowMore(false)}
-            />
-            <div className="fixed bottom-16 left-0 right-0 z-20 bg-sidebar border-t-2 border-sidebar-border shadow-2xl px-4 pt-4 pb-6">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-3 px-1">
-                Más secciones
-              </p>
-              <div className="grid grid-cols-2 gap-2">
-                {secondaryItems.map(({ to, icon: Icon, label }) => (
-                  <NavLink
-                    key={to}
-                    to={to}
-                    onClick={() => setShowMore(false)}
-                    className={({ isActive }) =>
-                      cn(
-                        'flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-medium transition-colors',
-                        isActive
-                          ? 'bg-primary text-primary-foreground'
-                          : 'bg-sidebar-accent text-sidebar-foreground hover:bg-primary/10'
-                      )
-                    }
-                  >
-                    <Icon className="h-5 w-5 shrink-0" />
-                    <span>{label}</span>
-                  </NavLink>
-                ))}
-              </div>
-            </div>
-          </>
-        )}
       </nav>
     </div>
   )

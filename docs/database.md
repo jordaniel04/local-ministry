@@ -160,6 +160,7 @@ El catálogo central de todas las personas del ministerio.
 |---|---|---|
 | `person_type` | text | `member` \| `believer` \| `visitor` |
 | `is_active` | bool | Para archivar sin borrar |
+| `participation_status` | text nullable | `active` / `inactive` / sin definir. Participación para acompañamiento; independiente del archivado. |
 
 > **member** = Miembro formal · **believer** = Creyente nuevo en formación · **visitor** = Visitante frecuente
 

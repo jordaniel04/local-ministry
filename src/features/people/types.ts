@@ -8,6 +8,8 @@ export type PersonUpdate = TablesUpdate<'people'>
 
 export type PersonType = 'member' | 'believer' | 'visitor'
 
+export type ParticipationStatus = 'active' | 'inactive'
+
 export type MaritalStatus = 'single' | 'married' | 'divorced' | 'widowed'
 
 export type HolySpiritExperience = 'none' | 'sanctified' | 'baptized'

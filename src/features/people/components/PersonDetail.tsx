@@ -3,7 +3,9 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Pencil, UserX, BookOpen, ClipboardList, CalendarCheck, HeartHandshake } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { usePerson, useDeactivatePerson } from '../hooks/usePeople'
+import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { usePerson, useDeactivatePerson, useUpdatePerson } from '../hooks/usePeople'
 import { PersonBadge } from './PersonBadge'
 import { PersonForm } from './PersonForm'
 import { AvatarUpload } from './AvatarUpload'
@@ -38,6 +40,7 @@ export function PersonDetail() {
   const navigate = useNavigate()
   const { data: person, isLoading, error } = usePerson(id!)
   const deactivate = useDeactivatePerson()
+  const updatePerson = useUpdatePerson()
   const [editOpen, setEditOpen] = useState(false)
 
   if (isLoading) {
@@ -53,8 +56,19 @@ export function PersonDetail() {
     return <p className="text-destructive text-sm">Persona no encontrada.</p>
   }
 
+  async function handleParticipationChange(value: string) {
+    try {
+      await updatePerson.mutateAsync({
+        id: person!.id,
+        participation_status: value === 'unset' ? null : value as 'active' | 'inactive',
+      })
+    } catch {
+      // La ficha conserva el valor guardado y muestra el error junto al selector.
+    }
+  }
+
   async function handleDeactivate() {
-    if (!confirm(`¿Desactivar a ${person!.first_name} ${person!.last_name}? No aparecerá en los listados activos.`)) return
+    if (!confirm(`¿Desactivar a ${person!.first_name} ${person!.last_name}? El registro quedará archivado.`)) return
     await deactivate.mutateAsync(person!.id)
     navigate('/people')
   }
@@ -83,7 +97,7 @@ export function PersonDetail() {
                   className="gap-2 text-destructive hover:text-destructive"
                 >
                   <UserX className="h-3.5 w-3.5" />
-                  Desactivar
+                  Archivar
                 </Button>
               )}
             </div>
@@ -104,7 +118,7 @@ export function PersonDetail() {
                 <PersonBadge type={person.person_type as PersonType} />
                 {!person.is_active && (
                   <span className="text-xs bg-destructive/10 text-destructive px-2 py-0.5 rounded-full">
-                    Inactivo
+                    Archivado
                   </span>
                 )}
               </div>
@@ -112,6 +126,23 @@ export function PersonDetail() {
           </div>
         </div>
 
+        <div className="space-y-2 max-w-xs">
+          <Label>Participación actual</Label>
+          <Select
+            value={person.participation_status ?? 'unset'}
+            onValueChange={(value) => { if (value) void handleParticipationChange(value) }}
+            disabled={updatePerson.isPending}
+          >
+            <SelectTrigger className="w-full"><SelectValue>{(value) => value === 'active' ? 'Activo' : value === 'inactive' ? 'Inactivo' : 'Sin definir'}</SelectValue></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="unset">Sin definir</SelectItem>
+              <SelectItem value="active">Activo</SelectItem>
+              <SelectItem value="inactive">Inactivo</SelectItem>
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-muted-foreground">El estado inactivo señala a quien puede necesitar acompañamiento.</p>
+          {updatePerson.isError && <p role="alert" className="text-sm text-destructive">{updatePerson.error?.message.includes('participation_status') ? 'Falta actualizar la base de datos para guardar este estado.' : 'No se pudo guardar el estado. Intenta de nuevo.'}</p>}
+        </div>
         {/* Accesos a procesos relacionados */}
         <section className="space-y-3">
           <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
